@@ -1,0 +1,7 @@
+packages:
+  - .
+  - playground
+allowBuilds:
+  '@nestjs/core': true
+  '@scarf/scarf': true
+  esbuild: true

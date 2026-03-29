@@ -1,0 +1,99 @@
+{
+  "name": "nest-zod",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "A library to provide helpers to validate and transform objects with Zod for NestJS.",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "homepage": "https://github.com/tom-auger/nest-zod#readme",
+  "bugs": {
+    "url": "https://github.com/tom-auger/nest-zod/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tom-auger/nest-zod.git"
+  },
+  "author": "Tom Auger <tom@tau.gr>",
+  "keywords": [
+    "nestjs",
+    "zod",
+    "validation",
+    "transformation",
+    "openapi",
+    "swagger"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./swagger": "./dist/swagger.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "build:playground": "pnpm run build && pnpm --filter nest-zod-playground run build",
+    "dev": "tsdown --watch",
+    "playground:dev": "pnpm run build && pnpm --parallel --filter nest-zod --filter nest-zod-playground run dev",
+    "playground:start": "pnpm run build && pnpm --filter nest-zod-playground run start",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt --check",
+    "fmt:fix": "oxfmt",
+    "prepare": "husky",
+    "quality": "pnpm run --parallel \"/^(lint|test:coverage)$/\"",
+    "release": "bumpp",
+    "prepublishOnly": "pnpm run build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "lint-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern"
+  },
+  "devDependencies": {
+    "@shikijs/vitepress-twoslash": "^3.14.0",
+    "@nestjs/common": "^11.1.17",
+    "@nestjs/core": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.17",
+    "@nestjs/swagger": "^11.2.6",
+    "@nestjs/testing": "^11.1.17",
+    "@types/node": "^25.5.0",
+    "@types/supertest": "^6.0.3",
+    "@typescript/native-preview": "7.0.0-dev.20260328.1",
+    "@vitest/coverage-v8": "^4.1.2",
+    "bumpp": "^11.0.1",
+    "floating-vue": "^5.2.2",
+    "husky": "^9.1.7",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "oxlint-tsgolint": "^0.18.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "supertest": "^7.1.4",
+    "tsdown": "^0.21.7",
+    "tsx": "^4.20.6",
+    "typescript": "^6.0.2",
+    "vitepress": "2.0.0-alpha.17",
+    "vitepress-plugin-group-icons": "^1.7.1",
+    "vitepress-plugin-llms": "^1.1.0",
+    "vitest": "^4.1.2",
+    "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/swagger": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",
+    "rxjs": "^7.0.0",
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/swagger": {
+      "optional": true
+    }
+  }
+}

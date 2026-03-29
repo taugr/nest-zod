@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nestEar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5C77"/>
+      <stop offset="100%" stop-color="#EA2845"/>
+    </linearGradient>
+    <linearGradient id="nestBottom" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA2845"/>
+      <stop offset="100%" stop-color="#9B1024"/>
+    </linearGradient>
+
+    <linearGradient id="zodEar" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="zodBottom" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+
+    <linearGradient id="bridgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EA2845"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(0, 0)">
+    <g filter="url(#glow)" stroke="#0D111A" stroke-width="6" stroke-linejoin="round">
+      
+      <polygon points="120,220 130,60 190,160 256,260" fill="url(#nestEar)"/>
+      
+      <polygon points="392,220 382,60 322,160 256,260" fill="url(#zodEar)"/>
+      
+      <polygon points="190,160 256,120 322,160 256,260" fill="url(#bridgeGrad)"/>
+      
+      <polygon points="120,220 256,260 256,450" fill="url(#nestBottom)"/>
+      
+      <polygon points="392,220 256,260 256,450" fill="url(#zodBottom)"/>
+      
+    </g>
+
+    <polygon points="120,220 130,60 190,160" fill="#ffffff" opacity="0.1" />
+  </g>
+
+</svg>

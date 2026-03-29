@@ -1,0 +1,20 @@
+{
+  "name": "nest-zod-playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx --tsconfig tsconfig.json watch --include \"../dist/**/*.mjs\" src/main.ts",
+    "start": "tsx --tsconfig tsconfig.json src/main.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.17",
+    "@nestjs/core": "^11.1.17",
+    "@nestjs/platform-express": "^11.1.17",
+    "@nestjs/swagger": "^11.2.6",
+    "nest-zod": "workspace:*",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.3.6"
+  }
+}
