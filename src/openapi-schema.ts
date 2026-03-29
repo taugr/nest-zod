@@ -66,11 +66,11 @@ function inlineComponentRefs(
       siblings,
       components,
       nextSeenRefs,
-    );
+    ) as Record<string, unknown>;
 
     return {
       allOf: [resolved],
-      ...(isOpenApiRecord(resolvedSiblings) ? resolvedSiblings : {}),
+      ...resolvedSiblings,
     };
   }
 

@@ -70,6 +70,154 @@ describe('zodToOpenApiSchema', () => {
       spy.mockRestore();
     }
   });
+
+  it('throws when a generated $ref cannot be resolved', () => {
+    const spy = vi
+      .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
+      .mockReturnValue({
+        components: {
+          schemas: {
+            BrokenRef: {
+              type: 'object',
+              properties: {
+                child: { $ref: '#/components/schemas/MissingChild' },
+              },
+            },
+          },
+        },
+      });
+
+    try {
+      expect(() =>
+        zodToOpenApiSchema(z.string(), { refId: 'BrokenRef' }),
+      ).toThrow(/failed to resolve OpenAPI component schema/);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('throws when generated component refs are recursive', () => {
+    const spy = vi
+      .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
+      .mockReturnValue({
+        components: {
+          schemas: {
+            RecursiveRef: { $ref: '#/components/schemas/Loop' },
+            Loop: { $ref: '#/components/schemas/Loop' },
+          },
+        },
+      });
+
+    try {
+      expect(() =>
+        zodToOpenApiSchema(z.string(), { refId: 'RecursiveRef' }),
+      ).toThrow(/recursive OpenAPI component refs are not supported/);
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('preserves sibling properties when inlining a referenced schema', () => {
+    const spy = vi
+      .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
+      .mockReturnValue({
+        components: {
+          schemas: {
+            WithSiblingRef: {
+              type: 'object',
+              properties: {
+                child: {
+                  $ref: '#/components/schemas/Child',
+                  description: 'Child payload',
+                },
+              },
+            },
+            Child: {
+              type: 'object',
+              properties: { id: { type: 'string' } },
+            },
+          },
+        },
+      });
+
+    try {
+      expect(zodToOpenApiSchema(z.string(), { refId: 'WithSiblingRef' })).toMatchObject({
+        type: 'object',
+        properties: {
+          child: {
+            allOf: [
+              {
+                type: 'object',
+                properties: { id: { type: 'string' } },
+              },
+            ],
+            description: 'Child payload',
+          },
+        },
+      });
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('passes through non-object component payloads from mocked generator output', () => {
+    const spy = vi
+      .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
+      .mockReturnValue({
+        components: {
+          schemas: {
+            PrimitiveRef: { $ref: '#/components/schemas/ScalarValue' },
+            ScalarValue: 'string',
+          },
+        },
+      } as unknown as ReturnType<OpenApiGeneratorV3['generateComponents']>);
+
+    try {
+      expect(zodToOpenApiSchema(z.string(), { refId: 'PrimitiveRef' })).toBe('string');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it('generates a schema when refId is omitted', () => {
+    expect(zodToOpenApiSchema(z.string())).toMatchObject({ type: 'string' });
+  });
+
+  it('handles schemas lookup becoming unavailable after the root schema is read', () => {
+    let readCount = 0;
+    const spy = vi
+      .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
+      .mockReturnValue({
+        components: {
+          get schemas() {
+            readCount += 1;
+            if (readCount === 1) {
+              return {
+                FlakySchemas: {
+                  type: 'object',
+                  properties: {
+                    value: { type: 'string' },
+                  },
+                },
+              };
+            }
+
+            return undefined;
+          },
+        },
+      } as unknown as ReturnType<OpenApiGeneratorV3['generateComponents']>);
+
+    try {
+      expect(zodToOpenApiSchema(z.string(), { refId: 'FlakySchemas' })).toMatchObject({
+        type: 'object',
+        properties: {
+          value: { type: 'string' },
+        },
+      });
+    } finally {
+      spy.mockRestore();
+    }
+  });
 });
 
 describe('zodSchemaForEncodedResponse', () => {
@@ -126,6 +274,87 @@ describe('zodSchemaForInput', () => {
         at: { type: 'string' },
       },
     });
+  });
+
+  it('preserves nullable wrappers around rewritten schemas', () => {
+    const openApi = zodToOpenApiSchema(
+      zodSchemaForInput(isoDatetimeToDate.nullable()),
+      { refId: 'NullableInputCodec' },
+    );
+
+    expect(openApi).toMatchObject({
+      type: 'string',
+      nullable: true,
+    });
+  });
+
+  it('rewrites array and union children recursively', () => {
+    const schema = z.union([
+      z.array(isoDatetimeToDate),
+      z.object({ ids: z.array(z.codec(z.string(), z.number(), {
+        decode: Number,
+        encode: String,
+      })) }),
+    ]);
+
+    const openApi = zodToOpenApiSchema(zodSchemaForInput(schema), {
+      refId: 'ArrayAndUnionInput',
+    });
+
+    expect(openApi).toMatchObject({
+      anyOf: [
+        {
+          type: 'array',
+          items: { type: 'string' },
+        },
+        {
+          type: 'object',
+          properties: {
+            ids: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  it('preserves strict, loose, and typed catchall object modes', () => {
+    const strictOpenApi = zodToOpenApiSchema(
+      zodSchemaForInput(z.strictObject({ id: isoDatetimeToDate })),
+      { refId: 'StrictObjectInput' },
+    );
+    const looseOpenApi = zodToOpenApiSchema(
+      zodSchemaForInput(z.looseObject({ id: isoDatetimeToDate })),
+      { refId: 'LooseObjectInput' },
+    );
+    const typedCatchallOpenApi = zodToOpenApiSchema(
+      zodSchemaForInput(z.object({ id: isoDatetimeToDate }).catchall(z.number())),
+      { refId: 'TypedCatchallInput' },
+    );
+
+    expect(strictOpenApi).toMatchObject({
+      type: 'object',
+      properties: { id: { type: 'string' } },
+      additionalProperties: false,
+    });
+    expect(looseOpenApi).toMatchObject({
+      type: 'object',
+      properties: { id: { type: 'string' } },
+      additionalProperties: {},
+    });
+    expect(typedCatchallOpenApi).toMatchObject({
+      type: 'object',
+      properties: { id: { type: 'string' } },
+      additionalProperties: { type: 'number' },
+    });
+  });
+
+  it('unwraps optional object schemas for query metadata generation', () => {
+    const schema = z.object({ q: z.string() }).optional();
+
+    expect(zodInputObjectSchema(schema)?.shape).toHaveProperty('q');
   });
 });
 
