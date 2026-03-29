@@ -18,7 +18,7 @@ type VitePlugins = NonNullable<
 export default defineConfig({
   title: 'nest-zod',
   description:
-    'Zod-powered request validation, query parsing, response serialization, and Swagger metadata for NestJS.',
+    'Zod-powered request parsing and response serialization for NestJS.',
   cleanUrls: true,
   head: [
     ['link', { rel: 'icon', href: '/logo.svg' }],
@@ -41,7 +41,7 @@ export default defineConfig({
       {
         property: 'og:description',
         content:
-          'Zod-powered request validation, query parsing, response serialization, and Swagger metadata for NestJS.',
+          'Zod-powered request parsing and response serialization for NestJS.',
       },
     ],
     ['meta', { property: 'og:image', content: '/logo.svg' }],

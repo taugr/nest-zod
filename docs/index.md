@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "nest-zod"
-  text: "Zod for NestJS routes"
-  tagline: "Validate requests, parse params and queries, serialize responses, and add Swagger metadata from the same schemas."
+  text: "Zod for NestJS"
+  tagline: "Zod-powered request parsing and response serialization for NestJS."
   image:
     src: /logo.svg
     alt: nest-zod logo
@@ -18,12 +18,12 @@ hero:
 
 features:
   - icon: "🧩"
-    title: One Schema, Two Jobs
-    details: Use one Zod schema to parse incoming Nest requests and encode outgoing responses.
+    title: Schemas for Requests and Responses
+    details: Use Zod schemas to parse incoming requests and encode outgoing responses.
   - icon: "📘"
-    title: Swagger When You Need It
-    details: Switch to `nest-zod/swagger` to attach OpenAPI metadata without changing the runtime model.
+    title: OpenAPI from the Same Schemas
+    details: Use `nest-zod/swagger` to automatically generate OpenAPI metadata from the same schemas.
   - icon: "🛤️"
-    title: Nest Route Coverage
-    details: Cover bodies, path params, queries, and serialized responses with concise decorators that fit existing controllers.
+    title: Route Inputs and Responses
+    details: Use concise decorators for bodies, params, queries, and responses in existing controllers.
 ---

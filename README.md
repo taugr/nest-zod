@@ -2,11 +2,25 @@
 
 <p align="center">
   <img src="./docs/public/logo.svg" alt="nest-zod logo" width="160" />
+  <br />
+  <a href="https://www.npmjs.com/package/nest-zod">
+    <img src="https://img.shields.io/npm/v/nest-zod" alt="npm version" />
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/npm/l/nest-zod" alt="license" />
+  </a>
+  <br />
+  Zod-powered request parsing and response serialization for NestJS.
 </p>
 
-Zod-powered request validation, query/param parsing, and response serialization for NestJS.
+## Features
 
-## Quick Start
+- Parse request bodies, route params, and query params with Zod schemas
+- Serialize handler responses through Zod before sending them back to clients
+- Support both runtime-only usage and Swagger / OpenAPI-aware usage
+- Keep Nest setup minimal with decorators that register the required pipe or interceptor themselves
+
+## Installation
 
 Install the package and its required peers:
 
@@ -27,29 +41,48 @@ Choose one import path:
 
 Most new users who already use `@nestjs/swagger` should start with `nest-zod/swagger`.
 
-## First Example
+## Quick Start
+
+`items.schemas.ts`
 
 ```typescript
-import { Controller, Get, Post } from '@nestjs/common';
 import { z } from 'zod';
-import { ZBody, ZParam, ZQuery, ZSerialize } from 'nest-zod/swagger';
 
-const createItemSchema = z.object({
+export const createItemSchema = z.object({
   title: z.string().min(1),
 });
 
-const listItemsQuerySchema = z.object({
+export const listItemsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
 });
 
-const itemResponseSchema = z.object({
+export const itemIdSchema = z.uuid();
+
+export const itemResponseSchema = z.object({
   id: z.uuid(),
   title: z.string(),
 });
 
-type CreateItemDto = z.infer<typeof createItemSchema>;
-type ListItemsQueryDto = z.infer<typeof listItemsQuerySchema>;
-type ItemResponseDto = z.infer<typeof itemResponseSchema>;
+export type CreateItemDto = z.infer<typeof createItemSchema>;
+export type ListItemsQueryDto = z.infer<typeof listItemsQuerySchema>;
+export type ItemResponseDto = z.infer<typeof itemResponseSchema>;
+```
+
+`items.controller.ts`
+
+```typescript
+import { Controller, Get, Post } from '@nestjs/common';
+import { ZBody, ZParam, ZQuery, ZSerialize } from 'nest-zod/swagger';
+
+import {
+  createItemSchema,
+  itemIdSchema,
+  itemResponseSchema,
+  listItemsQuerySchema,
+  type CreateItemDto,
+  type ItemResponseDto,
+  type ListItemsQueryDto,
+} from './items.schemas';
 
 @Controller('items')
 export class ItemsController {
@@ -64,7 +97,7 @@ export class ItemsController {
 
   @Get(':id')
   @ZSerialize(itemResponseSchema)
-  get(@ZParam('id', z.uuid()) id: string): ItemResponseDto {
+  get(@ZParam('id', itemIdSchema) id: string): ItemResponseDto {
     return {
       id,
       title: 'Widget',
@@ -93,7 +126,7 @@ For query params, use:
 - `ZQuery(schema)` for the whole query object
 - `ZQuery('name', schema)` for a named query parameter, including object-shaped values
 
-## Which Import Should I Use?
+## Import Paths
 
 Use `nest-zod` when you only want runtime behavior:
 
