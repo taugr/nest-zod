@@ -41,6 +41,24 @@ Choose one import path:
 
 Most new users who already use `@nestjs/swagger` should start with `nest-zod/swagger`.
 
+## AI Skills
+
+This repo includes AI skills in `skills/`.
+
+Install them with:
+
+```bash
+npx skills add tom-auger/nest-zod
+```
+
+Example:
+
+```text
+Use $nest-zod-runtime to add runtime-only nest-zod decorators to this NestJS controller.
+```
+
+See the [skills guide](https://nestzod.dev/guide/skills) for discovery, installation, and usage details.
+
 ## Quick Start
 
 `items.schemas.ts`

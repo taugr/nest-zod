@@ -58,6 +58,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/guide/' },
           { text: 'Getting Started', link: '/guide/getting-started' },
+          { text: 'AI Skills', link: '/guide/skills' },
           { text: 'Runtime Only', link: '/guide/runtime-only' },
           { text: 'Swagger', link: '/guide/swagger' },
         ],
@@ -95,6 +96,7 @@ export default defineConfig({
           items: [
             { text: 'What Is nest-zod?', link: '/guide/' },
             { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: 'AI Skills', link: '/guide/skills' },
           ],
         },
         {

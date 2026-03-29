@@ -54,7 +54,11 @@ deno add npm:@nestjs/swagger
 
 :::
 
-## Recommended First Controller
+::: tip AI Skills
+This repo also includes AI skills for runtime-only and Swagger-aware `nest-zod` workflows. See [AI Skills](/guide/skills) for installation and usage.
+:::
+
+## First Controller Example
 
 If your app already uses Swagger, start with `nest-zod/swagger`:
 
