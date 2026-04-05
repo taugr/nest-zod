@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>nest-zod favicon</title>
+  <defs>
+    <linearGradient id="nestEar" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF5C77"/>
+      <stop offset="100%" stop-color="#EA2845"/>
+    </linearGradient>
+    <linearGradient id="nestBottom" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA2845"/>
+      <stop offset="100%" stop-color="#9B1024"/>
+    </linearGradient>
+    <linearGradient id="zodEar" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="zodBottom" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+    <linearGradient id="bridgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EA2845"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <g stroke="#0D111A" stroke-width="14" stroke-linejoin="round">
+    <polygon points="128,228 146,106 216,184 256,260" fill="url(#nestEar)" />
+    <polygon points="384,228 366,106 296,184 256,260" fill="url(#zodEar)" />
+    <polygon points="216,184 256,144 296,184 256,260" fill="url(#bridgeGrad)" />
+    <polygon points="128,228 256,260 256,404" fill="url(#nestBottom)" />
+    <polygon points="384,228 256,260 256,404" fill="url(#zodBottom)" />
+  </g>
+</svg>

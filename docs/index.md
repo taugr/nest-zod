@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "nest-zod"
   text: "Zod for NestJS"
-  tagline: "Zod-powered request parsing and response serialization for NestJS."
+  tagline: "Zod-powered request parsing, response serialization, and OpenAPI support for NestJS."
   image:
     src: /logo.svg
     alt: nest-zod logo

@@ -18,10 +18,56 @@ type VitePlugins = NonNullable<
 export default defineConfig({
   title: 'nest-zod',
   description:
-    'Zod-powered request parsing and response serialization for NestJS.',
+    'Zod-powered request parsing, response serialization, and OpenAPI support for NestJS.',
+  sitemap: {
+    hostname: 'https://nestzod.dev',
+  },
   cleanUrls: true,
   head: [
-    ['link', { rel: 'icon', href: '/logo.svg' }],
+    ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
+    [
+      'link',
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: '/favicon.svg',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: '/favicon-32x32.png',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '48x48',
+        href: '/favicon-48x48.png',
+      },
+    ],
+    [
+      'link',
+      {
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/apple-touch-icon.png',
+      },
+    ],
+    ['link', { rel: 'canonical', href: 'https://nestzod.dev/' }],
+    [
+      'meta',
+      {
+        name: 'description',
+        content:
+          'Zod-powered request parsing, response serialization, and OpenAPI support for NestJS.',
+      },
+    ],
     [
       'meta',
       {
@@ -29,6 +75,8 @@ export default defineConfig({
         content: 'nestjs,zod,swagger,openapi,validation,serialization',
       },
     ],
+    ['meta', { name: 'author', content: 'Tom Auger' }],
+    ['meta', { name: 'robots', content: 'index,follow' }],
     [
       'meta',
       {
@@ -36,15 +84,28 @@ export default defineConfig({
         content: 'nest-zod',
       },
     ],
+    ['meta', { property: 'og:type', content: 'website' }],
     [
       'meta',
       {
         property: 'og:description',
         content:
-          'Zod-powered request parsing and response serialization for NestJS.',
+          'Zod-powered request parsing, response serialization, and OpenAPI support for NestJS.',
       },
     ],
+    ['meta', { property: 'og:url', content: 'https://nestzod.dev/' }],
     ['meta', { property: 'og:image', content: '/logo.svg' }],
+    ['meta', { name: 'twitter:card', content: 'summary' }],
+    ['meta', { name: 'twitter:title', content: 'nest-zod' }],
+    [
+      'meta',
+      {
+        name: 'twitter:description',
+        content:
+          'Zod-powered request parsing, response serialization, and OpenAPI support for NestJS.',
+      },
+    ],
+    ['meta', { name: 'twitter:image', content: 'https://nestzod.dev/logo.svg' }],
     ['meta', { name: 'theme-color', content: '#EA2845' }],
   ],
   themeConfig: {
