@@ -54,7 +54,7 @@
     "*": "oxfmt --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
-    "@shikijs/vitepress-twoslash": "^3.14.0",
+    "@shikijs/vitepress-twoslash": "^4.0.0",
     "@nestjs/common": "^11.1.17",
     "@nestjs/core": "^11.1.17",
     "@nestjs/platform-express": "^11.1.17",
