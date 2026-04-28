@@ -67,6 +67,7 @@
     "bumpp": "^11.0.1",
     "floating-vue": "^5.2.2",
     "husky": "^9.1.7",
+    "lint-staged": "^16.2.4",
     "oxfmt": "^0.46.0",
     "oxlint": "^1.57.0",
     "oxlint-tsgolint": "^0.21.0",
