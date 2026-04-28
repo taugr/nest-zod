@@ -134,7 +134,10 @@ function unwrapInputSchema(schema: z.ZodType): z.ZodType {
   return isPipeDef(def) ? unwrapInputSchema(def.in) : schema;
 }
 
-function rebuildWrappedSchema(schema: z.ZodType, wrapper: WrappedSchema): z.ZodType {
+function rebuildWrappedSchema(
+  schema: z.ZodType,
+  wrapper: WrappedSchema,
+): z.ZodType {
   switch (wrapper.def.type) {
     case 'optional':
       return schema.optional();
@@ -147,7 +150,10 @@ function rebuildWrappedSchema(schema: z.ZodType, wrapper: WrappedSchema): z.ZodT
 
 function rewriteObjectInputSchema(schema: z.ZodObject): z.ZodType {
   const shape = Object.fromEntries(
-    Object.entries(schema.shape).map(([key, child]) => [key, zodSchemaForInput(child)]),
+    Object.entries(schema.shape).map(([key, child]) => [
+      key,
+      zodSchemaForInput(child),
+    ]),
   );
   const catchall = schema.def.catchall as z.ZodType | undefined;
 
@@ -168,11 +174,14 @@ function rewriteUnwrappedInputSchema(schema: z.ZodType): z.ZodType {
     case 'object':
       return rewriteObjectInputSchema(schema as z.ZodObject);
     case 'array':
-      return z.array(zodSchemaForInput((schema as z.ZodArray<z.ZodType>).element));
+      return z.array(
+        zodSchemaForInput((schema as z.ZodArray<z.ZodType>).element),
+      );
     case 'union':
       return z.union(
-        (schema as z.ZodUnion<readonly [z.ZodType, z.ZodType, ...z.ZodType[]]>)
-          .options.map((option) => zodSchemaForInput(option)) as [
+        (
+          schema as z.ZodUnion<readonly [z.ZodType, z.ZodType, ...z.ZodType[]]>
+        ).options.map((option) => zodSchemaForInput(option)) as [
           z.ZodType,
           z.ZodType,
           ...z.ZodType[],
@@ -214,7 +223,9 @@ function unwrapInputObjectSchema(schema: z.ZodType): z.ZodObject | undefined {
  * Returns the underlying object schema for input docs when the schema is a
  * `z.object(...)` wrapped by `optional`, `nullable`, or `default`.
  */
-export function zodInputObjectSchema(schema: z.ZodType): z.ZodObject | undefined {
+export function zodInputObjectSchema(
+  schema: z.ZodType,
+): z.ZodObject | undefined {
   return unwrapInputObjectSchema(zodSchemaForInput(schema));
 }
 

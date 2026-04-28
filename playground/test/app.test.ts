@@ -34,9 +34,13 @@ describe('playground app', () => {
     expect(docsResponse.status).toBe(200);
     expect(docsResponse.body.paths['/items'].post).toBeDefined();
     expect(
-      docsResponse.body.paths['/items'].post.requestBody.content['application/json'],
+      docsResponse.body.paths['/items'].post.requestBody.content[
+        'application/json'
+      ],
     ).toBeDefined();
-    expect(docsResponse.body.paths['/items'].post.responses['200'].content).toBeDefined();
+    expect(
+      docsResponse.body.paths['/items'].post.responses['200'].content,
+    ).toBeDefined();
   });
 
   it('supports the runtime-only decorators without Swagger metadata', async () => {
@@ -65,7 +69,9 @@ describe('playground app', () => {
   });
 
   it('returns 400 for invalid params and 500 for serialization failures', async () => {
-    const invalidParamResponse = await request(app.getHttpServer()).get('/items/not-a-uuid');
+    const invalidParamResponse = await request(app.getHttpServer()).get(
+      '/items/not-a-uuid',
+    );
     expect(invalidParamResponse.status).toBe(400);
 
     const invalidPlainParamResponse = await request(app.getHttpServer()).get(
@@ -88,9 +94,8 @@ describe('playground app', () => {
     expect(queryResponse.body).toEqual({ q: 'widget' });
 
     const docsResponse = await request(app.getHttpServer()).get('/docs-json');
-    const parameters = docsResponse.body.paths['/items/named-query'].get.parameters as
-      | Array<Record<string, unknown>>
-      | undefined;
+    const parameters = docsResponse.body.paths['/items/named-query'].get
+      .parameters as Array<Record<string, unknown>> | undefined;
 
     expect(parameters).toHaveLength(1);
     expect(parameters?.[0]).toMatchObject({

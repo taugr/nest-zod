@@ -47,7 +47,11 @@
 .VPFeature {
   border: 1px solid rgba(148, 163, 184, 0.14);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.92)),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.74),
+      rgba(255, 255, 255, 0.92)
+    ),
     linear-gradient(130deg, rgba(255, 92, 119, 0.08), rgba(59, 130, 246, 0.08));
 }
 

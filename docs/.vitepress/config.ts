@@ -105,7 +105,10 @@ export default defineConfig({
           'Zod-powered request parsing, response serialization, and OpenAPI support for NestJS.',
       },
     ],
-    ['meta', { name: 'twitter:image', content: 'https://nestzod.dev/logo.svg' }],
+    [
+      'meta',
+      { name: 'twitter:image', content: 'https://nestzod.dev/logo.svg' },
+    ],
     ['meta', { name: 'theme-color', content: '#EA2845' }],
   ],
   themeConfig: {
@@ -176,7 +179,9 @@ export default defineConfig({
         {
           text: 'Repository',
           collapsed: false,
-          items: [{ text: 'Development Playground', link: '/guide/playground' }],
+          items: [
+            { text: 'Development Playground', link: '/guide/playground' },
+          ],
         },
       ],
     },

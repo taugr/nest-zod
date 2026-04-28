@@ -1,16 +1,18 @@
-import { Body, Param, Query, RequestMethod, UseInterceptors, applyDecorators } from '@nestjs/common';
+import {
+  Body,
+  Param,
+  Query,
+  RequestMethod,
+  UseInterceptors,
+  applyDecorators,
+} from '@nestjs/common';
 import { HTTP_CODE_METADATA, METHOD_METADATA } from '@nestjs/common/constants';
 import type {
   ApiResponseOptions,
   ApiBodyOptions,
   ApiParamOptions,
 } from '@nestjs/swagger';
-import {
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiResponse, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 import type { z } from 'zod';
 import { ZSerializerInterceptor } from './serialize';
 import { ZValidationPipe } from './deserialize';
@@ -48,13 +50,16 @@ export type ZBodyOptions = Omit<
  * Applies the same runtime validation as the root-package decorator and also adds
  * {@link ApiBody} metadata so Swagger/OpenAPI documents the request body.
  */
-export function ZBody<T extends z.ZodType>(
-  schema: T,
-  options?: ZBodyOptions,
-) {
+export function ZBody<T extends z.ZodType>(schema: T, options?: ZBodyOptions) {
   const { refId, ...apiBodyRest } = options ?? {};
-  const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), { refId });
-  return (target: object, propertyKey: string | symbol, parameterIndex: number) => {
+  const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), {
+    refId,
+  });
+  return (
+    target: object,
+    propertyKey: string | symbol,
+    parameterIndex: number,
+  ) => {
     Body(new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
     const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
     if (descriptor) {
@@ -89,9 +94,19 @@ export function ZParam<T extends z.ZodType>(
   options?: ZParamOptions,
 ) {
   const { refId, ...apiParamRest } = options ?? {};
-  const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), { refId });
-  return (target: object, propertyKey: string | symbol, parameterIndex: number) => {
-    Param(name, new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
+  const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), {
+    refId,
+  });
+  return (
+    target: object,
+    propertyKey: string | symbol,
+    parameterIndex: number,
+  ) => {
+    Param(name, new ZValidationPipe(schema))(
+      target,
+      propertyKey,
+      parameterIndex,
+    );
     const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
     if (descriptor) {
       ApiParam({
@@ -156,9 +171,17 @@ export function ZQuery<T extends z.ZodType>(
     maybeOptions,
   );
   const refPrefix = options?.refId ?? `NestZod_query_${Date.now()}`;
-  return (target: object, propertyKey: string | symbol, parameterIndex: number) => {
+  return (
+    target: object,
+    propertyKey: string | symbol,
+    parameterIndex: number,
+  ) => {
     if (name) {
-      Query(name, new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
+      Query(name, new ZValidationPipe(schema))(
+        target,
+        propertyKey,
+        parameterIndex,
+      );
     } else {
       Query(new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
     }
@@ -193,7 +216,9 @@ export function ZQuery<T extends z.ZodType>(
     ApiQuery({
       name,
       required: !acceptsUndefined(schema),
-      schema: zodToOpenApiSchema(zodSchemaForInput(schema), { refId: refPrefix }),
+      schema: zodToOpenApiSchema(zodSchemaForInput(schema), {
+        refId: refPrefix,
+      }),
     })(target, propertyKey, descriptor);
   };
 }

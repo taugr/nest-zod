@@ -1,4 +1,4 @@
 interface:
-  display_name: "Nest Zod Swagger"
-  short_description: "Guide Swagger-aware nest-zod integration"
-  default_prompt: "Use $nest-zod-swagger to add or update Swagger-aware nest-zod decorators in this NestJS codebase."
+  display_name: 'Nest Zod Swagger'
+  short_description: 'Guide Swagger-aware nest-zod integration'
+  default_prompt: 'Use $nest-zod-swagger to add or update Swagger-aware nest-zod decorators in this NestJS codebase.'

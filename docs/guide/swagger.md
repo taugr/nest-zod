@@ -56,7 +56,10 @@ const itemResponseSchema = z.object({
 export class ItemsController {
   @Post()
   @ZSerialize(itemResponseSchema, { refId: 'CreateItemResponse' })
-  create(@ZBody(createItemSchema, { refId: 'CreateItemBody' }) body: z.infer<typeof createItemSchema>) {
+  create(
+    @ZBody(createItemSchema, { refId: 'CreateItemBody' })
+    body: z.infer<typeof createItemSchema>,
+  ) {
     return {
       id: '550e8400-e29b-41d4-a716-446655440000',
       title: body.title,
@@ -75,12 +78,17 @@ export class ItemsController {
   }
 
   @Get()
-  @ZSerialize(z.object({
-    page: z.int(),
-    includeArchived: z.boolean(),
-    items: z.array(itemResponseSchema),
-  }))
-  list(@ZQuery(listItemsQuerySchema, { refId: 'ListItemsQuery' }) query: z.infer<typeof listItemsQuerySchema>) {
+  @ZSerialize(
+    z.object({
+      page: z.int(),
+      includeArchived: z.boolean(),
+      items: z.array(itemResponseSchema),
+    }),
+  )
+  list(
+    @ZQuery(listItemsQuerySchema, { refId: 'ListItemsQuery' })
+    query: z.infer<typeof listItemsQuerySchema>,
+  ) {
     return {
       page: query.page,
       includeArchived: query.includeArchived,

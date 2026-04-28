@@ -44,6 +44,8 @@
       matchDepTypes: ['devDependencies'],
       matchUpdateTypes: ['minor', 'patch'],
       groupName: 'dev dependencies',
+      automerge: true,
+      automergeType: 'pr',
     },
   ],
 }
