@@ -1,6 +1,6 @@
 ---
 name: nest-zod-runtime
-description: "Guide runtime-only integration of nest-zod in NestJS codebases. Use when adding or updating Zod-backed request parsing and response serialization with imports from `nest-zod`, especially in controllers, schemas, and handler return paths that should not include Swagger/OpenAPI metadata."
+description: 'Guide runtime-only integration of nest-zod in NestJS codebases. Use when adding or updating Zod-backed request parsing and response serialization with imports from `nest-zod`, especially in controllers, schemas, and handler return paths that should not include Swagger/OpenAPI metadata.'
 ---
 
 # Nest Zod Runtime

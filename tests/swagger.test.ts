@@ -11,12 +11,7 @@ import {
   zodSchemaForEncodedResponse,
   zodToOpenApiSchema,
 } from '../src/openapi-schema';
-import {
-  ZBody,
-  ZParam,
-  ZQuery,
-  ZSerialize,
-} from '../src/swagger';
+import { ZBody, ZParam, ZQuery, ZSerialize } from '../src/swagger';
 
 const API_PARAMETERS = 'swagger/apiParameters';
 const API_RESPONSE = 'swagger/apiResponse';
@@ -63,9 +58,9 @@ describe('zodToOpenApiSchema', () => {
       .spyOn(OpenApiGeneratorV3.prototype, 'generateComponents')
       .mockReturnValue({ components: { schemas: {} } });
     try {
-      expect(() => zodToOpenApiSchema(z.string(), { refId: 'missing' })).toThrow(
-        /failed to generate OpenAPI schema/,
-      );
+      expect(() =>
+        zodToOpenApiSchema(z.string(), { refId: 'missing' }),
+      ).toThrow(/failed to generate OpenAPI schema/);
     } finally {
       spy.mockRestore();
     }
@@ -141,7 +136,9 @@ describe('zodToOpenApiSchema', () => {
       });
 
     try {
-      expect(zodToOpenApiSchema(z.string(), { refId: 'WithSiblingRef' })).toMatchObject({
+      expect(
+        zodToOpenApiSchema(z.string(), { refId: 'WithSiblingRef' }),
+      ).toMatchObject({
         type: 'object',
         properties: {
           child: {
@@ -173,7 +170,9 @@ describe('zodToOpenApiSchema', () => {
       } as unknown as ReturnType<OpenApiGeneratorV3['generateComponents']>);
 
     try {
-      expect(zodToOpenApiSchema(z.string(), { refId: 'PrimitiveRef' })).toBe('string');
+      expect(zodToOpenApiSchema(z.string(), { refId: 'PrimitiveRef' })).toBe(
+        'string',
+      );
     } finally {
       spy.mockRestore();
     }
@@ -208,7 +207,9 @@ describe('zodToOpenApiSchema', () => {
       } as unknown as ReturnType<OpenApiGeneratorV3['generateComponents']>);
 
     try {
-      expect(zodToOpenApiSchema(z.string(), { refId: 'FlakySchemas' })).toMatchObject({
+      expect(
+        zodToOpenApiSchema(z.string(), { refId: 'FlakySchemas' }),
+      ).toMatchObject({
         type: 'object',
         properties: {
           value: { type: 'string' },
@@ -229,11 +230,14 @@ describe('zodSchemaForEncodedResponse', () => {
 
   it('returns the schema unchanged when not a pipe', () => {
     const s = z.object({ x: z.number() });
-    expect(zodToOpenApiSchema(zodSchemaForEncodedResponse(s), { refId: 'PlainResponse' }))
-      .toMatchObject({
-        type: 'object',
-        properties: { x: { type: 'number' } },
-      });
+    expect(
+      zodToOpenApiSchema(zodSchemaForEncodedResponse(s), {
+        refId: 'PlainResponse',
+      }),
+    ).toMatchObject({
+      type: 'object',
+      properties: { x: { type: 'number' } },
+    });
   });
 
   it('rewrites nested codec fields to their encoded wire types', () => {
@@ -244,7 +248,9 @@ describe('zodSchemaForEncodedResponse', () => {
     });
 
     const wire = zodSchemaForEncodedResponse(s);
-    const openApi = zodToOpenApiSchema(wire, { refId: 'EncodedNestedResponse' });
+    const openApi = zodToOpenApiSchema(wire, {
+      refId: 'EncodedNestedResponse',
+    });
 
     expect(openApi).toMatchObject({
       type: 'object',
@@ -291,10 +297,14 @@ describe('zodSchemaForInput', () => {
   it('rewrites array and union children recursively', () => {
     const schema = z.union([
       z.array(isoDatetimeToDate),
-      z.object({ ids: z.array(z.codec(z.string(), z.number(), {
-        decode: Number,
-        encode: String,
-      })) }),
+      z.object({
+        ids: z.array(
+          z.codec(z.string(), z.number(), {
+            decode: Number,
+            encode: String,
+          }),
+        ),
+      }),
     ]);
 
     const openApi = zodToOpenApiSchema(zodSchemaForInput(schema), {
@@ -330,7 +340,9 @@ describe('zodSchemaForInput', () => {
       { refId: 'LooseObjectInput' },
     );
     const typedCatchallOpenApi = zodToOpenApiSchema(
-      zodSchemaForInput(z.object({ id: isoDatetimeToDate }).catchall(z.number())),
+      zodSchemaForInput(
+        z.object({ id: isoDatetimeToDate }).catchall(z.number()),
+      ),
       { refId: 'TypedCatchallInput' },
     );
 
@@ -369,9 +381,9 @@ describe('isZodObjectSchema', () => {
   });
 
   it('is true for wrapped objects used as whole-query schemas', () => {
-    expect(isZodObjectSchema(z.object({ q: z.string() }).default({ q: 'x' }))).toBe(
-      true,
-    );
+    expect(
+      isZodObjectSchema(z.object({ q: z.string() }).default({ q: 'x' })),
+    ).toBe(true);
   });
 });
 
@@ -394,7 +406,10 @@ describe('swagger ZBody', () => {
     const bodySchema = z.object({ title: z.string() });
 
     class Controller {
-      create(@ZBody(bodySchema, { description: 'Payload', refId: 'CreateBody' }) _body: unknown) {
+      create(
+        @ZBody(bodySchema, { description: 'Payload', refId: 'CreateBody' })
+        _body: unknown,
+      ) {
         return {};
       }
     }
@@ -508,9 +523,9 @@ describe('swagger ZParam', () => {
       descriptor.value,
     ) as Record<string, unknown>[];
 
-    expect(
-      params.some((p) => p['in'] === 'path' && p['name'] === 'slug'),
-    ).toBe(true);
+    expect(params.some((p) => p['in'] === 'path' && p['name'] === 'slug')).toBe(
+      true,
+    );
   });
 });
 
@@ -571,9 +586,11 @@ describe('swagger ZQuery', () => {
     expect(queries).toHaveLength(2);
     expect(queries.find((p) => p['name'] === 'page')?.['required']).toBe(false);
     expect(queries.find((p) => p['name'] === 'q')?.['required']).toBe(false);
-    expect(queries.find((p) => p['name'] === 'page')?.['schema']).toMatchObject({
-      type: 'number',
-    });
+    expect(queries.find((p) => p['name'] === 'page')?.['schema']).toMatchObject(
+      {
+        type: 'number',
+      },
+    );
   });
 
   it('documents named object schemas as a single query parameter', () => {
@@ -671,10 +688,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'get',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: unknown; description?: string }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: unknown; description?: string }>;
 
     expect(responses['200']).toBeDefined();
     expect(responses['200'].description).toBe('Done');
@@ -703,10 +720,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'get',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: { properties?: Record<string, unknown> } }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: { properties?: Record<string, unknown> } }>;
 
     expect(responses['200']?.schema).toMatchObject({
       type: 'object',
@@ -734,10 +751,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'create',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: unknown }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: unknown }>;
 
     expect(responses['201']?.schema).toMatchObject({
       type: 'object',
@@ -762,10 +779,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'getBare',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: unknown }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: unknown }>;
 
     expect(responses['200']?.schema).toMatchObject({
       type: 'object',
@@ -790,10 +807,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'getNoContent',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: unknown }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: unknown }>;
 
     expect(responses['204']?.schema).toMatchObject({
       type: 'object',
@@ -820,10 +837,10 @@ describe('swagger ZSerialize', () => {
       Controller.prototype,
       'accepted',
     )!;
-    const responses = Reflect.getMetadata(API_RESPONSE, descriptor.value) as Record<
-      string,
-      { schema?: unknown; description?: string }
-    >;
+    const responses = Reflect.getMetadata(
+      API_RESPONSE,
+      descriptor.value,
+    ) as Record<string, { schema?: unknown; description?: string }>;
 
     expect(responses['202']).toBeDefined();
     expect(responses['202'].description).toBe('Accepted');

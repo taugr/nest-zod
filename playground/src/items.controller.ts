@@ -20,7 +20,8 @@ export class ItemsController {
   @Post()
   @HttpCode(200)
   @ZSerialize(itemResponseSchema, {
-    description: 'Create an item and encode the Date response field as ISO-8601.',
+    description:
+      'Create an item and encode the Date response field as ISO-8601.',
     refId: 'PlaygroundCreateItemResponse',
   })
   create(
@@ -40,7 +41,8 @@ export class ItemsController {
 
   @Get('broken/serialization')
   @ZSerialize(itemResponseSchema, {
-    description: 'Intentional serialization failure to demonstrate 500 handling.',
+    description:
+      'Intentional serialization failure to demonstrate 500 handling.',
     refId: 'PlaygroundBrokenSerializationResponse',
   })
   brokenSerialization(): unknown {

@@ -321,7 +321,10 @@ describe('ZSerializerInterceptor', () => {
       });
 
       // Invalid data: id is a string that can't be parsed to int
-      const inputData = { id: 'not-a-number' as unknown as number, name: 'Test' };
+      const inputData = {
+        id: 'not-a-number' as unknown as number,
+        name: 'Test',
+      };
 
       const interceptor = new ZSerializerInterceptor(schema);
       const context = createMockExecutionContext();

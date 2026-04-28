@@ -1,4 +1,4 @@
 interface:
-  display_name: "Nest Zod Runtime"
-  short_description: "Guide runtime-only nest-zod integration"
-  default_prompt: "Use $nest-zod-runtime to add or update runtime-only nest-zod decorators in this NestJS codebase."
+  display_name: 'Nest Zod Runtime'
+  short_description: 'Guide runtime-only nest-zod integration'
+  default_prompt: 'Use $nest-zod-runtime to add or update runtime-only nest-zod decorators in this NestJS codebase.'

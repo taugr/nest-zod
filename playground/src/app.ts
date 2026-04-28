@@ -16,7 +16,9 @@ export async function createApp(options?: CreateAppOptions) {
 
   const config = new DocumentBuilder()
     .setTitle('nest-zod playground')
-    .setDescription('Demonstrates Zod-backed NestJS validation, serialization, and Swagger metadata.')
+    .setDescription(
+      'Demonstrates Zod-backed NestJS validation, serialization, and Swagger metadata.',
+    )
     .setVersion('1.0.0')
     .build();
 

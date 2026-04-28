@@ -1,6 +1,6 @@
 ---
 name: nest-zod-swagger
-description: "Guide Swagger-aware integration of nest-zod in NestJS codebases. Use when adding or updating Zod-backed request parsing, response serialization, and generated OpenAPI metadata with imports from `nest-zod/swagger`, especially in controllers that already use `@nestjs/swagger` or `SwaggerModule`."
+description: 'Guide Swagger-aware integration of nest-zod in NestJS codebases. Use when adding or updating Zod-backed request parsing, response serialization, and generated OpenAPI metadata with imports from `nest-zod/swagger`, especially in controllers that already use `@nestjs/swagger` or `SwaggerModule`.'
 ---
 
 # Nest Zod Swagger

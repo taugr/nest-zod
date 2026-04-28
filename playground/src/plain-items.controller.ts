@@ -19,7 +19,9 @@ export class PlainItemsController {
 
   @Get(':id')
   @ZSerialize(itemResponseSchema)
-  getById(@ZParam('id', itemResponseSchema.shape.id) id: string): ItemResponseDto {
+  getById(
+    @ZParam('id', itemResponseSchema.shape.id) id: string,
+  ): ItemResponseDto {
     return {
       id,
       title: 'Plain widget',
