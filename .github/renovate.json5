@@ -47,5 +47,12 @@
       automerge: true,
       automergeType: 'pr',
     },
+    {
+      description: 'Automerge pnpm updates',
+      matchPackageNames: ['pnpm'],
+      matchUpdateTypes: ['minor', 'patch'],
+      automerge: true,
+      automergeType: 'pr',
+    },
   ],
 }
