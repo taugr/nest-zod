@@ -48,7 +48,7 @@ This repo includes AI skills in `skills/`.
 Install them with:
 
 ```bash
-npx skills add tom-auger/nest-zod
+npx skills add taugr/nest-zod
 ```
 
 Example:

@@ -12,7 +12,7 @@ Requirements:
 Clone the repo and install dependencies:
 
 ```bash
-git clone https://github.com/tom-auger/nest-zod.git
+git clone https://github.com/taugr/nest-zod.git
 cd nest-zod
 pnpm install
 ```
@@ -70,4 +70,4 @@ pnpm run test
 
 ## Questions
 
-Open an issue at [github.com/tom-auger/nest-zod/issues](https://github.com/tom-auger/nest-zod/issues).
+Open an issue at [github.com/taugr/nest-zod/issues](https://github.com/taugr/nest-zod/issues).

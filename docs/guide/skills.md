@@ -12,7 +12,7 @@ Use `nest-zod-runtime` when you want imports from `nest-zod`. Use `nest-zod-swag
 Install the repository skills:
 
 ```sh
-npx skills add tom-auger/nest-zod
+npx skills add taugr/nest-zod
 ```
 
 The `skills` CLI installs the selected skill into your local agent-specific directories.
