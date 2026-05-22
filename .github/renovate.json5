@@ -28,6 +28,13 @@
       schedule: ['* 0-12 * * *'],
     },
     {
+      description: 'Automerge non-major dependencies and peerDependencies',
+      matchDepTypes: ['dependencies', 'peerDependencies'],
+      matchUpdateTypes: ['minor', 'patch', 'digest'],
+      automerge: true,
+      automergeType: 'pr',
+    },
+    {
       description: 'Update devDependencies every Saturday morning',
       matchDepTypes: ['devDependencies'],
       // Cron: Every Saturday in the morning (minute hour day month weekday)
