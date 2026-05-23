@@ -62,7 +62,7 @@
     "@nestjs/testing": "^11.1.17",
     "@types/node": "^25.5.0",
     "@types/supertest": "^7.0.0",
-    "@typescript/native-preview": "7.0.0-dev.20260522.1",
+    "@typescript/native-preview": "7.0.0-dev.20260523.1",
     "@vitest/coverage-v8": "^4.1.2",
     "bumpp": "^11.0.1",
     "floating-vue": "^5.2.2",
