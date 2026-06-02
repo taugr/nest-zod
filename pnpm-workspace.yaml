@@ -1,6 +1,10 @@
 packages:
   - .
   - playground
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+blockExoticSubdeps: true
 allowBuilds:
   '@nestjs/core': true
   '@scarf/scarf': true
