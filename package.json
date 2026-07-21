@@ -84,7 +84,7 @@
     "zod": "^4.3.6"
   },
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.5.0"
+    "@asteasolutions/zod-to-openapi": "^9.0.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0",
