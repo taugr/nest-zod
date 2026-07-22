@@ -16,10 +16,10 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v6.0.9
 
-      - name: Set node LTS
+      - name: Set minimum supported Node
         uses: actions/setup-node@v7
         with:
-          node-version: lts/*
+          node-version: 22
           cache: pnpm
 
       - name: Install

@@ -5,7 +5,7 @@ Guidance for coding agents working in this repository.
 ## Repo Overview
 
 - Package manager: `pnpm` 10
-- Runtime baseline: Node.js 18+
+- Runtime baseline: Node.js 22+
 - Workspace layout:
   - `src/`: published `nest-zod` library code
   - `tests/`: library test suite run with Vitest

@@ -6,7 +6,7 @@ Thanks for contributing.
 
 Requirements:
 
-- Node.js 18+
+- Node.js 22+
 - `pnpm` 10+
 
 Clone the repo and install dependencies:

@@ -1,5 +1,7 @@
 # Getting Started
 
+nest-zod requires Node.js 22 or newer.
+
 ## Install
 
 Install `nest-zod` and its required peer dependencies:

@@ -22,6 +22,8 @@
 
 ## Installation
 
+Requires Node.js 22 or newer.
+
 Install the package and its required peers:
 
 ```bash
