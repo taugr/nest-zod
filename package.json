@@ -60,7 +60,7 @@
     "@nestjs/swagger": "^11.4.6",
     "@nestjs/testing": "^11.1.28",
     "@shikijs/vitepress-twoslash": "^4.3.1",
-    "@types/node": "^25.9.5",
+    "@types/node": "^26.1.1",
     "@types/supertest": "^7.2.1",
     "@typescript/native-preview": "7.0.0-dev.20260702.3",
     "@vitest/coverage-v8": "^4.1.10",
