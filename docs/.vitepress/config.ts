@@ -14,6 +14,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 type VitePlugins = NonNullable<
   NonNullable<Parameters<typeof defineConfig>[0]['vite']>['plugins']
 >;
+type CodeTransformers = NonNullable<
+  NonNullable<
+    Parameters<typeof defineConfig>[0]['markdown']
+  >['codeTransformers']
+>;
 
 export default defineConfig({
   title: 'nest-zod',
@@ -209,7 +214,7 @@ export default defineConfig({
           },
         },
       }),
-    ],
+    ] as unknown as CodeTransformers,
     languages: ['ts', 'js'],
     config(md) {
       md.use(groupIconMdPlugin);
