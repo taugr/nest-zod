@@ -31,7 +31,9 @@ These routes import from `nest-zod/swagger`:
 - `POST /items`
 - `GET /items`
 - `GET /items/named-query?filter[q]=widget`
+- `GET /items/async/:id`
 - `GET /items/:id`
+- `POST /items/detailed-validation`
 - `GET /items/broken/serialization`
 
 They demonstrate:
@@ -40,6 +42,8 @@ They demonstrate:
 - UUID path param validation
 - query coercion and defaults
 - named object query parsing
+- asynchronous request validation
+- application-defined validation error envelopes
 - response serialization of `Date` values
 - generated Swagger metadata
 - intentional `400` and `500` paths
@@ -58,6 +62,8 @@ They demonstrate the same runtime model without Swagger metadata.
 - `POST /items` with a valid payload returns a serialized response
 - `GET /items?page=2&includeArchived=true` shows query coercion/default behavior
 - `GET /items/named-query?filter[q]=widget` shows named object query parsing and Swagger docs
+- `GET /items/async/550e8400-e29b-41d4-a716-446655440000` shows async validation
+- `POST /items/detailed-validation` with an invalid body returns field-level issues
 - `GET /items/not-a-uuid` returns `400`
 - `GET /items/broken/serialization` returns `500`
 - Swagger UI documents the `/items` routes but not the runtime-only metadata additions for `/plain-items`

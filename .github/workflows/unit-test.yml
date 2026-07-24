@@ -8,7 +8,84 @@ on:
 
 jobs:
   test:
+    name: Unit tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+
+      - name: Set Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Lint and type check
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test:coverage
+
+  project:
+    name: Project and package checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+
+      - name: Set Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install
+
+      - name: Check formatting
+        run: pnpm run fmt
+
+      - name: Build playground
+        run: pnpm run build:playground
+
+      - name: Build docs
+        run: pnpm run docs:build
+
+      - name: Check peer dependencies
+        run: pnpm peers check
+
+      - name: Check package contents
+        run: pnpm pack --dry-run
+
+  consumer:
+    name: Packed consumer (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Nest 10 and Swagger 8
+            nest-version: ^10.0.0
+            swagger-version: ^8.0.0
+          - name: Nest 11 and Swagger 11
+            nest-version: ^11.0.0
+            swagger-version: ^11.0.0
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -25,11 +102,11 @@ jobs:
       - name: Install
         run: pnpm install
 
-      - name: Build
+      - name: Build package
         run: pnpm run build
 
-      - name: Lint and type check
-        run: pnpm run lint
-
-      - name: Test
-        run: pnpm run test:coverage
+      - name: Test packed consumer
+        run: pnpm run test:consumer
+        env:
+          NEST_VERSION: ${{ matrix.nest-version }}
+          SWAGGER_VERSION: ${{ matrix.swagger-version }}

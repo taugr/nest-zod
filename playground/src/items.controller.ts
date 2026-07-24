@@ -1,4 +1,10 @@
-import { Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+} from '@nestjs/common';
 import { ZBody, ZParam, ZQuery, ZSerialize } from 'nest-zod/swagger';
 import type {
   CreateItemDto,
@@ -8,6 +14,7 @@ import type {
   NamedFilterQueryDto,
 } from './items.schemas';
 import {
+  asyncItemIdSchema,
   createItemSchema,
   itemResponseSchema,
   listItemsQuerySchema,
@@ -22,12 +29,10 @@ export class ItemsController {
   @ZSerialize(itemResponseSchema, {
     description:
       'Create an item and encode the Date response field as ISO-8601.',
-    refId: 'PlaygroundCreateItemResponse',
   })
   create(
     @ZBody(createItemSchema, {
       description: 'Request body validated by Zod before the handler runs.',
-      refId: 'PlaygroundCreateItemBody',
     })
     body: CreateItemDto,
   ): ItemResponseDto {
@@ -39,11 +44,28 @@ export class ItemsController {
     };
   }
 
+  @Post('detailed-validation')
+  @HttpCode(200)
+  detailedValidation(
+    @ZBody(createItemSchema, {
+      description: 'Request body with application-defined validation errors.',
+      validation: {
+        exceptionFactory: (error) =>
+          new BadRequestException({
+            message: 'Invalid item payload',
+            issues: error.issues,
+          }),
+      },
+    })
+    body: CreateItemDto,
+  ): CreateItemDto {
+    return body;
+  }
+
   @Get('broken/serialization')
   @ZSerialize(itemResponseSchema, {
     description:
       'Intentional serialization failure to demonstrate 500 handling.',
-    refId: 'PlaygroundBrokenSerializationResponse',
   })
   brokenSerialization(): unknown {
     return {
@@ -56,20 +78,28 @@ export class ItemsController {
 
   @Get('named-query')
   namedQuery(
-    @ZQuery('filter', namedFilterQuerySchema, {
-      refId: 'PlaygroundNamedFilterQuery',
-    })
+    @ZQuery('filter', namedFilterQuerySchema)
     filter: NamedFilterQueryDto,
   ): NamedFilterQueryDto {
     return filter;
   }
 
+  @Get('async/:id')
+  getAsync(
+    @ZParam('id', asyncItemIdSchema, {
+      description: 'UUID checked by an asynchronous Zod refinement.',
+      validation: { async: true },
+    })
+    id: string,
+  ) {
+    return { id };
+  }
+
   @Get(':id')
-  @ZSerialize(itemResponseSchema, { refId: 'PlaygroundGetItemResponse' })
+  @ZSerialize(itemResponseSchema)
   getById(
     @ZParam('id', itemResponseSchema.shape.id, {
       description: 'Route parameter validated as a UUID.',
-      refId: 'PlaygroundItemId',
     })
     id: string,
   ): ItemResponseDto {
@@ -82,10 +112,9 @@ export class ItemsController {
   }
 
   @Get()
-  @ZSerialize(listItemsResponseSchema, { refId: 'PlaygroundListItemsResponse' })
+  @ZSerialize(listItemsResponseSchema)
   list(
-    @ZQuery(listItemsQuerySchema, { refId: 'PlaygroundListItemsQuery' })
-    query: ListItemsQueryDto,
+    @ZQuery(listItemsQuerySchema) query: ListItemsQueryDto,
   ): ListItemsResponseDto {
     return {
       page: query.page,

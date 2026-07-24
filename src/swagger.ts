@@ -14,10 +14,14 @@ import type {
 } from '@nestjs/swagger';
 import { ApiResponse, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 import type { z } from 'zod';
-import { ZSerializerInterceptor } from './serialize';
-import { ZValidationPipe } from './deserialize';
+import {
+  ZSerializerInterceptor,
+  type ZSerializerInterceptorOptions,
+} from './serialize';
+import { ZValidationPipe, type ZValidationPipeOptions } from './deserialize';
 import {
   zodInputObjectSchema,
+  zodSchemaAcceptsUndefined,
   zodSchemaForInput,
   zodSchemaForEncodedResponse,
   zodToOpenApiSchema,
@@ -42,7 +46,10 @@ export type ZBodyOptions = Omit<
   ApiBodyOptions & { schema?: unknown },
   'schema'
 > &
-  Pick<ZodToOpenApiSchemaOptions, 'refId'>;
+  Pick<ZodToOpenApiSchemaOptions, 'refId'> & {
+    /** Runtime request parsing options. */
+    validation?: ZValidationPipeOptions;
+  };
 
 /**
  * Swagger-aware variant of `ZBody` from `nest-zod`.
@@ -51,7 +58,7 @@ export type ZBodyOptions = Omit<
  * {@link ApiBody} metadata so Swagger/OpenAPI documents the request body.
  */
 export function ZBody<T extends z.ZodType>(schema: T, options?: ZBodyOptions) {
-  const { refId, ...apiBodyRest } = options ?? {};
+  const { refId, validation, ...apiBodyRest } = options ?? {};
   const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), {
     refId,
   });
@@ -60,7 +67,11 @@ export function ZBody<T extends z.ZodType>(schema: T, options?: ZBodyOptions) {
     propertyKey: string | symbol,
     parameterIndex: number,
   ) => {
-    Body(new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
+    Body(new ZValidationPipe(schema, validation))(
+      target,
+      propertyKey,
+      parameterIndex,
+    );
     const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
     if (descriptor) {
       ApiBody({
@@ -80,7 +91,10 @@ export type ZParamOptions = Omit<
   ApiParamOptions & { schema?: unknown },
   'name' | 'schema'
 > &
-  Pick<ZodToOpenApiSchemaOptions, 'refId'>;
+  Pick<ZodToOpenApiSchemaOptions, 'refId'> & {
+    /** Runtime request parsing options. */
+    validation?: ZValidationPipeOptions;
+  };
 
 /**
  * Swagger-aware variant of `ZParam` from `nest-zod`.
@@ -93,7 +107,7 @@ export function ZParam<T extends z.ZodType>(
   schema: T,
   options?: ZParamOptions,
 ) {
-  const { refId, ...apiParamRest } = options ?? {};
+  const { refId, validation, ...apiParamRest } = options ?? {};
   const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), {
     refId,
   });
@@ -102,7 +116,7 @@ export function ZParam<T extends z.ZodType>(
     propertyKey: string | symbol,
     parameterIndex: number,
   ) => {
-    Param(name, new ZValidationPipe(schema))(
+    Param(name, new ZValidationPipe(schema, validation))(
       target,
       propertyKey,
       parameterIndex,
@@ -118,12 +132,11 @@ export function ZParam<T extends z.ZodType>(
   };
 }
 
-/** Options for {@link ZQuery}. Currently only supports `refId` for stable schema names. */
-export type ZQueryOptions = Pick<ZodToOpenApiSchemaOptions, 'refId'>;
-
-function acceptsUndefined(schema: z.ZodType): boolean {
-  return schema.safeParse(undefined).success;
-}
+/** Options for {@link ZQuery}. */
+export type ZQueryOptions = Pick<ZodToOpenApiSchemaOptions, 'refId'> & {
+  /** Runtime request parsing options. */
+  validation?: ZValidationPipeOptions;
+};
 
 function resolveZQueryArgs<T extends z.ZodType>(
   nameOrSchema: string | T,
@@ -177,13 +190,17 @@ export function ZQuery<T extends z.ZodType>(
     parameterIndex: number,
   ) => {
     if (name) {
-      Query(name, new ZValidationPipe(schema))(
+      Query(name, new ZValidationPipe(schema, options?.validation))(
         target,
         propertyKey,
         parameterIndex,
       );
     } else {
-      Query(new ZValidationPipe(schema))(target, propertyKey, parameterIndex);
+      Query(new ZValidationPipe(schema, options?.validation))(
+        target,
+        propertyKey,
+        parameterIndex,
+      );
     }
 
     const descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
@@ -194,11 +211,12 @@ export function ZQuery<T extends z.ZodType>(
     const objectSchema = !name ? zodInputObjectSchema(schema) : undefined;
     if (objectSchema) {
       const shape = objectSchema.shape as Record<string, z.ZodType>;
-      const parentAcceptsUndefined = acceptsUndefined(schema);
+      const parentAcceptsUndefined = zodSchemaAcceptsUndefined(schema);
       for (const [key, child] of Object.entries(shape)) {
         ApiQuery({
           name: key,
-          required: !parentAcceptsUndefined && !acceptsUndefined(child),
+          required:
+            !parentAcceptsUndefined && !zodSchemaAcceptsUndefined(child),
           schema: zodToOpenApiSchema(zodSchemaForInput(child), {
             refId: `${refPrefix}_${key}`,
           }),
@@ -215,7 +233,7 @@ export function ZQuery<T extends z.ZodType>(
 
     ApiQuery({
       name,
-      required: !acceptsUndefined(schema),
+      required: !zodSchemaAcceptsUndefined(schema),
       schema: zodToOpenApiSchema(zodSchemaForInput(schema), {
         refId: refPrefix,
       }),
@@ -231,7 +249,10 @@ export type ZSerializeOptions = Omit<
   ApiResponseOptions & { schema?: unknown },
   'schema'
 > &
-  Pick<ZodToOpenApiSchemaOptions, 'refId'>;
+  Pick<ZodToOpenApiSchemaOptions, 'refId'> & {
+    /** Runtime response encoding options. */
+    serialization?: ZSerializerInterceptorOptions;
+  };
 
 function inferResponseStatus(handler: object): number {
   const explicitStatus = Reflect.getMetadata(HTTP_CODE_METADATA, handler) as
@@ -262,7 +283,7 @@ export function ZSerialize<T extends z.ZodType>(
   schema: T,
   options?: ZSerializeOptions,
 ): MethodDecorator {
-  const { refId, ...responseRest } = options ?? {};
+  const { refId, serialization, ...responseRest } = options ?? {};
   const docSchema = zodSchemaForEncodedResponse(schema);
   const openApiSchema = zodToOpenApiSchema(docSchema, { refId });
   return (
@@ -270,11 +291,9 @@ export function ZSerialize<T extends z.ZodType>(
     propertyKey: string | symbol,
     descriptor: PropertyDescriptor,
   ) => {
-    applyDecorators(UseInterceptors(new ZSerializerInterceptor(schema)))(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    applyDecorators(
+      UseInterceptors(new ZSerializerInterceptor(schema, serialization)),
+    )(target, propertyKey, descriptor);
 
     const applyApiResponse = () =>
       ApiResponse(

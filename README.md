@@ -146,6 +146,22 @@ For query params, use:
 - `ZQuery(schema)` for the whole query object
 - `ZQuery('name', schema)` for a named query parameter, including object-shaped values
 
+For schemas with async refinements, transforms, or codecs, enable async mode:
+
+```typescript
+@ZParam('id', asyncIdSchema, {
+  validation: { async: true },
+})
+id: string
+```
+
+Async response encoding is enabled separately with
+`{ serialization: { async: true } }` on `ZSerialize`.
+
+Validation errors use a generic `400` response by default. Applications can
+provide `validation.exceptionFactory` when they intentionally want to expose
+Zod issues in a custom error envelope.
+
 ## Import Paths
 
 Use `nest-zod` when you only want runtime behavior:
@@ -200,13 +216,19 @@ Useful endpoints:
 - `POST /items`
 - `GET /items`
 - `GET /items/named-query?filter[q]=widget`
+- `GET /items/async/:id`
 - `GET /items/:id`
+- `POST /items/detailed-validation`
 - `POST /plain-items`
 - `GET /plain-items/:id`
 - `GET /items/broken/serialization`
 
 The playground enables Express's extended query parser, so nested query values like
 `filter[q]=widget` are parsed into objects before Zod validation runs.
+
+See [Compatibility and limits](https://nestzod.dev/guide/compatibility) for
+supported Nest/Swagger versions, async behavior, error customization, OpenAPI
+component limitations, and query parser requirements.
 
 For local iteration:
 

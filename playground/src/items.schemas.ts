@@ -15,6 +15,10 @@ export const namedFilterQuerySchema = z.object({
   q: z.string().trim().min(1),
 });
 
+export const asyncItemIdSchema = z
+  .string()
+  .refine(async (value) => z.uuid().safeParse(value).success, 'Invalid UUID');
+
 export const itemResponseSchema = z.object({
   id: z.uuid(),
   title: z.string(),

@@ -161,6 +161,64 @@ describe('ZValidationPipe', () => {
     ).toThrowError('boom');
   });
 
+  test('uses a custom validation exception factory', () => {
+    const pipe = new ZValidationPipe(z.object({ name: z.string() }), {
+      exceptionFactory: (error) =>
+        new BadRequestException({
+          message: 'Invalid request',
+          issues: error.issues,
+        }),
+    });
+
+    try {
+      pipe.transform(
+        {},
+        {
+          type: 'body',
+          metatype: Object,
+          data: '',
+        },
+      );
+      expect.fail('Expected validation to fail');
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect((error as BadRequestException).getResponse()).toMatchObject({
+        message: 'Invalid request',
+        issues: [
+          {
+            path: ['name'],
+          },
+        ],
+      });
+    }
+  });
+
+  test('supports opt-in async parsing', async () => {
+    const schema = z.string().transform(async (value) => value.length);
+    const pipe = new ZValidationPipe(schema, { async: true });
+
+    await expect(
+      pipe.transform('async value', {
+        type: 'body',
+        metatype: String,
+        data: '',
+      }),
+    ).resolves.toBe(11);
+  });
+
+  test('maps failed async validation to BadRequestException', async () => {
+    const schema = z.string().refine(async () => false, 'Async check failed');
+    const pipe = new ZValidationPipe(schema, { async: true });
+
+    await expect(
+      pipe.transform('value', {
+        type: 'body',
+        metatype: String,
+        data: '',
+      }),
+    ).rejects.toThrow(BadRequestException);
+  });
+
   describe('codec testing', () => {
     describe('isoDatetimeToDate', () => {
       test('successfully decodes ISO datetime string to Date', () => {

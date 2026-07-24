@@ -7,6 +7,8 @@ import { isoDatetimeToDate } from './codecs';
 import {
   isZodObjectSchema,
   zodInputObjectSchema,
+  zodSchemaAcceptsNullishValue,
+  zodSchemaAcceptsUndefined,
   zodSchemaForInput,
   zodSchemaForEncodedResponse,
   zodToOpenApiSchema,
@@ -17,6 +19,66 @@ const API_PARAMETERS = 'swagger/apiParameters';
 const API_RESPONSE = 'swagger/apiResponse';
 
 describe('zodToOpenApiSchema', () => {
+  it('inspects nullish input structurally without running schema logic', () => {
+    const customCheck = vi.fn(() => false);
+    const transform = vi.fn((value: unknown) => value);
+    const schemas: [string, z.ZodType, boolean, boolean][] = [
+      ['any', z.any(), true, true],
+      ['unknown', z.unknown(), true, true],
+      ['custom', z.custom(customCheck), true, true],
+      ['transform', z.transform(transform), true, true],
+      ['catch', z.string().catch('fallback'), true, true],
+      ['null', z.null(), true, false],
+      ['undefined', z.undefined(), false, true],
+      ['void', z.void(), false, true],
+      ['null literal', z.literal(null), true, false],
+      ['undefined literal', z.literal(undefined), false, true],
+      ['optional', z.string().optional(), false, true],
+      ['default', z.string().default('value'), false, true],
+      ['prefault', z.string().prefault('value'), false, true],
+      ['nullable', z.string().nullable(), true, false],
+      ['nonoptional', z.any().optional().nonoptional(), true, false],
+      ['readonly', z.any().readonly(), true, true],
+      ['success', z.success(z.any()), true, true],
+      ['pipe', z.any().pipe(z.any()), true, true],
+      ['null union', z.union([z.string(), z.null()]), true, false],
+      ['undefined union', z.union([z.string(), z.undefined()]), false, true],
+      ['intersection', z.intersection(z.any(), z.null()), true, false],
+      [
+        'failed intersection',
+        z.intersection(z.string(), z.any()),
+        false,
+        false,
+      ],
+      ['lazy', z.lazy(() => z.null()), true, false],
+      ['string', z.string(), false, false],
+      ['coerced string', z.coerce.string(), true, true],
+      ['coerced boolean', z.coerce.boolean(), true, true],
+      ['coerced number', z.coerce.number(), true, false],
+      ['coerced bigint', z.coerce.bigint(), true, false],
+      ['coerced date', z.coerce.date(), true, false],
+    ];
+
+    for (const [name, schema, acceptsNull, acceptsUndefined] of schemas) {
+      expect(zodSchemaAcceptsNullishValue(schema, null), name).toBe(
+        acceptsNull,
+      );
+      expect(zodSchemaAcceptsUndefined(schema), name).toBe(acceptsUndefined);
+    }
+
+    let recursive!: z.ZodType;
+    recursive = z.lazy(() => recursive);
+    expect(zodSchemaAcceptsNullishValue(recursive, null)).toBe(false);
+    expect(customCheck).not.toHaveBeenCalled();
+    expect(transform).not.toHaveBeenCalled();
+  });
+
+  it('handles lazy schemas during synchronous OpenAPI introspection', () => {
+    expect(zodToOpenApiSchema(z.lazy(() => z.string()))).toMatchObject({
+      type: 'string',
+    });
+  });
+
   it('generates an object schema from z.object', () => {
     const schema = z.object({
       name: z.string(),
@@ -31,10 +93,10 @@ describe('zodToOpenApiSchema', () => {
     expect(openApi.required).toEqual(expect.arrayContaining(['name', 'age']));
   });
 
-  it('uses a stable refId when provided', () => {
+  it('uses refId only as an internal inline-generation identifier', () => {
     const schema = z.string();
-    const a = zodToOpenApiSchema(schema, { refId: 'StableRef' });
-    const b = zodToOpenApiSchema(schema, { refId: 'StableRef' });
+    const a = zodToOpenApiSchema(schema, { refId: 'FirstInternalRef' });
+    const b = zodToOpenApiSchema(schema, { refId: 'SecondInternalRef' });
     expect(a).toEqual(b);
   });
 
@@ -264,6 +326,53 @@ describe('zodSchemaForEncodedResponse', () => {
 });
 
 describe('zodSchemaForInput', () => {
+  it('preserves container constraints and metadata around nested codecs', () => {
+    const schema = z
+      .object({
+        timestamps: z
+          .array(isoDatetimeToDate)
+          .min(2)
+          .max(4)
+          .meta({ description: 'Two to four timestamps' }),
+        choice: z
+          .union([isoDatetimeToDate, z.boolean()])
+          .meta({ description: 'Timestamp or flag' }),
+        optionalTimestamp: isoDatetimeToDate
+          .optional()
+          .meta({ description: 'Optional timestamp' }),
+      })
+      .meta({ description: 'Codec envelope' });
+
+    const wire = zodSchemaForInput(schema);
+    const openApi = zodToOpenApiSchema(wire, {
+      refId: 'MetadataPreservingInput',
+    });
+
+    expect(wire).toBe(schema);
+    expect(openApi).toMatchObject({
+      type: 'object',
+      description: 'Codec envelope',
+      properties: {
+        timestamps: {
+          type: 'array',
+          items: { type: 'string', format: 'date-time' },
+          minItems: 2,
+          maxItems: 4,
+          description: 'Two to four timestamps',
+        },
+        choice: {
+          description: 'Timestamp or flag',
+          anyOf: [{ type: 'string', format: 'date-time' }, { type: 'boolean' }],
+        },
+        optionalTimestamp: {
+          type: 'string',
+          format: 'date-time',
+          description: 'Optional timestamp',
+        },
+      },
+    });
+  });
+
   it('rewrites nested codec fields to their input wire types', () => {
     const s = z.object({
       page: z.number(),
@@ -402,12 +511,42 @@ describe('zodInputObjectSchema', () => {
 });
 
 describe('swagger ZBody', () => {
+  it('documents async-refined nullable input without running the refinement', () => {
+    const refinement = vi.fn(async () => true);
+    const bodySchema = z.any().refine(refinement);
+
+    class Controller {
+      create(
+        @ZBody(bodySchema, { validation: { async: true } }) _body: unknown,
+      ) {
+        return {};
+      }
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Controller.prototype,
+      'create',
+    )!;
+    const params = Reflect.getMetadata(
+      API_PARAMETERS,
+      descriptor.value,
+    ) as Record<string, unknown>[];
+    const bodyParam = params.find((p) => p['in'] === 'body' && p['schema']);
+
+    expect(bodyParam?.['schema']).toMatchObject({ nullable: true });
+    expect(refinement).not.toHaveBeenCalled();
+  });
+
   it('registers Swagger body metadata with a Zod-derived schema', () => {
     const bodySchema = z.object({ title: z.string() });
 
     class Controller {
       create(
-        @ZBody(bodySchema, { description: 'Payload', refId: 'CreateBody' })
+        @ZBody(bodySchema, {
+          description: 'Payload',
+          refId: 'CreateBody',
+          validation: { async: true },
+        })
         _body: unknown,
       ) {
         return {};
@@ -473,7 +612,9 @@ describe('swagger ZParam', () => {
     const idSchema = z.uuid();
 
     class Controller {
-      getOne(@ZParam('id', idSchema) _id: unknown) {
+      getOne(
+        @ZParam('id', idSchema, { validation: { async: true } }) _id: unknown,
+      ) {
         return {};
       }
     }
@@ -530,6 +671,57 @@ describe('swagger ZParam', () => {
 });
 
 describe('swagger ZQuery', () => {
+  it('documents async-refined optional query input without running it', () => {
+    const refinement = vi.fn(async () => true);
+    const querySchema = z.any().refine(refinement);
+
+    class Controller {
+      search(
+        @ZQuery('filter', querySchema, {
+          validation: { async: true },
+        })
+        _query: unknown,
+      ) {
+        return {};
+      }
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Controller.prototype,
+      'search',
+    )!;
+    const params = Reflect.getMetadata(
+      API_PARAMETERS,
+      descriptor.value,
+    ) as Record<string, unknown>[];
+    const query = params.find(
+      (parameter) =>
+        parameter['in'] === 'query' && parameter['name'] === 'filter',
+    );
+
+    expect(query?.['required']).toBe(false);
+    expect(refinement).not.toHaveBeenCalled();
+  });
+
+  it('does not run nested async refinements while generating query metadata', () => {
+    const refinement = vi.fn(async () => true);
+    const child = z.any().refine(refinement).optional();
+    const originalSafeParse = child.safeParse;
+    const querySchema = z.object({ filter: child });
+
+    class Controller {
+      search(
+        @ZQuery(querySchema, { validation: { async: true } }) _query: unknown,
+      ) {
+        return {};
+      }
+    }
+
+    void Controller;
+    expect(refinement).not.toHaveBeenCalled();
+    expect(child.safeParse).toBe(originalSafeParse);
+  });
+
   it('emits one ApiQuery per object property', () => {
     const q = z.object({
       page: z.coerce.number(),
@@ -537,7 +729,13 @@ describe('swagger ZQuery', () => {
     });
 
     class Controller {
-      search(@ZQuery(q, { refId: 'SearchQuery' }) _query: unknown) {
+      search(
+        @ZQuery(q, {
+          refId: 'SearchQuery',
+          validation: { async: true },
+        })
+        _query: unknown,
+      ) {
         return {};
       }
     }
@@ -676,6 +874,7 @@ describe('swagger ZSerialize', () => {
       @ZSerialize(responseSchema, {
         description: 'Done',
         refId: 'GetResponse',
+        serialization: { async: true },
       })
       get() {
         return { ok: true };

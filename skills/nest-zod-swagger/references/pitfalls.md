@@ -32,3 +32,9 @@ For requests like `?filter[q]=widget`, the app may need the Express extended que
 ## Assuming Swagger bootstrap is automatic
 
 `nest-zod/swagger` does not call `SwaggerModule.createDocument()` or `SwaggerModule.setup()` for the app. Keep that wiring in bootstrap code.
+
+## Async schemas without async mode
+
+Schemas with asynchronous refinements, transforms, or codecs require
+`validation: { async: true }`. Async response encoding separately requires
+`serialization: { async: true }`.

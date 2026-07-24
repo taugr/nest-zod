@@ -85,6 +85,33 @@ describe('playground app', () => {
     expect(serializationFailureResponse.status).toBe(500);
   });
 
+  it('supports async validation and application-defined validation errors', async () => {
+    const asyncValidResponse = await request(app.getHttpServer()).get(
+      '/items/async/550e8400-e29b-41d4-a716-446655440000',
+    );
+    expect(asyncValidResponse.status).toBe(200);
+    expect(asyncValidResponse.body.id).toBe(
+      '550e8400-e29b-41d4-a716-446655440000',
+    );
+
+    const asyncInvalidResponse = await request(app.getHttpServer()).get(
+      '/items/async/not-a-uuid',
+    );
+    expect(asyncInvalidResponse.status).toBe(400);
+
+    const detailedErrorResponse = await request(app.getHttpServer())
+      .post('/items/detailed-validation')
+      .send({ title: '', quantity: 'nope' });
+    expect(detailedErrorResponse.status).toBe(400);
+    expect(detailedErrorResponse.body).toMatchObject({
+      message: 'Invalid item payload',
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: ['title'] }),
+        expect.objectContaining({ path: ['quantity'] }),
+      ]),
+    });
+  });
+
   it('supports named object query decorators in Swagger and at runtime', async () => {
     const queryResponse = await request(app.getHttpServer()).get(
       '/items/named-query?filter[q]=widget',

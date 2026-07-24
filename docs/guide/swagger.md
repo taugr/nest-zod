@@ -30,6 +30,10 @@ For whole-query schemas in `nest-zod/swagger`, the object form may be wrapped by
 `optional`, `nullable`, or `default`. More exotic wrapper chains are not part of
 the documented contract.
 
+The optional `refId` is used only by the temporary registry that generates an
+inline schema. It does not create a reusable `components.schemas` entry. Most
+applications can omit it.
+
 ## Example
 
 ```ts
@@ -55,11 +59,8 @@ const itemResponseSchema = z.object({
 @Controller('items')
 export class ItemsController {
   @Post()
-  @ZSerialize(itemResponseSchema, { refId: 'CreateItemResponse' })
-  create(
-    @ZBody(createItemSchema, { refId: 'CreateItemBody' })
-    body: z.infer<typeof createItemSchema>,
-  ) {
+  @ZSerialize(itemResponseSchema)
+  create(@ZBody(createItemSchema) body: z.infer<typeof createItemSchema>) {
     return {
       id: '550e8400-e29b-41d4-a716-446655440000',
       title: body.title,
@@ -68,8 +69,8 @@ export class ItemsController {
   }
 
   @Get(':id')
-  @ZSerialize(itemResponseSchema, { refId: 'GetItemResponse' })
-  get(@ZParam('id', z.uuid(), { refId: 'ItemId' }) id: string) {
+  @ZSerialize(itemResponseSchema)
+  get(@ZParam('id', z.uuid()) id: string) {
     return {
       id,
       title: 'Widget',
@@ -86,7 +87,7 @@ export class ItemsController {
     }),
   )
   list(
-    @ZQuery(listItemsQuerySchema, { refId: 'ListItemsQuery' })
+    @ZQuery(listItemsQuerySchema)
     query: z.infer<typeof listItemsQuerySchema>,
   ) {
     return {

@@ -1,121 +1,186 @@
 # API Reference
 
-## Runtime Decorators
+## Entry Points
 
-### `ZBody(schema)`
-
-Validates and parses the request body with `schema.parse`.
+`nest-zod` exports runtime parsing and serialization:
 
 ```ts
-@Post()
-create(@ZBody(createItemSchema) body: CreateItemDto) {
-  return body;
-}
+import {
+  ZBody,
+  ZParam,
+  ZQuery,
+  ZSerialize,
+  ZSerializerInterceptor,
+  ZValidationPipe,
+} from 'nest-zod';
 ```
 
-### `ZParam(name, schema)`
-
-Validates and parses a named route param.
+`nest-zod/swagger` exports Swagger-aware versions of the four decorators plus
+the OpenAPI helpers:
 
 ```ts
-@Get(':id')
-get(@ZParam('id', z.uuid()) id: string) {
-  return { id };
-}
+import {
+  ZBody,
+  ZParam,
+  ZQuery,
+  ZSerialize,
+  isZodObjectSchema,
+  zodInputObjectSchema,
+  zodSchemaForEncodedResponse,
+  zodSchemaForInput,
+  zodToOpenApiSchema,
+} from 'nest-zod/swagger';
 ```
 
-### `ZQuery(schema)`
+## Request Decorators
 
-Validates and parses the whole query payload. This is especially useful with `z.coerce.*()` and defaults.
+### `ZBody(schema, options?)`
 
-```ts
-@Get()
-list(@ZQuery(z.object({
-  page: z.coerce.number().int().positive().default(1),
-})) query: { page: number }) {
-  return query;
-}
-```
+Parses the whole request body.
 
-### `ZQuery(name, schema)`
+### `ZParam(name, schema, options?)`
 
-Validates and parses a named query parameter. The schema can be scalar or object-shaped.
+Parses one named route parameter.
 
-```ts
-@Get('search')
-search(@ZQuery('q', z.string().trim().min(1)) q: string) {
-  return { q };
-}
-```
+### `ZQuery(schema, options?)`
+
+Parses the whole query object.
+
+### `ZQuery(name, schema, options?)`
+
+Parses one named query parameter. The named value may be scalar or
+object-shaped.
+
+All request decorators accept runtime validation options:
 
 ```ts
-@Get('named-query')
-search(@ZQuery('filter', z.object({ q: z.string().min(1) })) filter: { q: string }) {
-  return filter;
-}
-```
-
-### `ZSerialize(schema)`
-
-Applies the serializer interceptor and encodes the returned value with the provided schema before Nest sends the response.
-
-No separate Nest registration is required. `ZSerialize` attaches the interceptor for that route directly.
-
-```ts
-@Get(':id')
-@ZSerialize(itemResponseSchema)
-get() {
-  return {
-    id: '550e8400-e29b-41d4-a716-446655440000',
-    title: 'Widget',
+type ZValidationDecoratorOptions = {
+  validation?: {
+    async?: boolean;
+    exceptionFactory?: (error: z.ZodError) => Error;
   };
-}
+};
 ```
 
-## Swagger Decorators
+`async` selects `schema.parseAsync()` instead of `schema.parse()`.
+`exceptionFactory` replaces the default `BadRequestException` for Zod failures.
 
-The `nest-zod/swagger` entrypoint exports the same decorator names with added OpenAPI metadata support:
+Swagger-aware `ZBody` and `ZParam` also forward their corresponding
+`@nestjs/swagger` options. Swagger-aware `ZQuery` adds `refId` but otherwise
+keeps the runtime option shape.
 
-- `ZBody(schema, options?)`
-- `ZParam(name, schema, options?)`
-- `ZQuery(schema, options?)`
-- `ZQuery(name, schema, options?)`
-- `ZSerialize(schema, options?)`
+## Response Decorator
 
-The optional `refId` is useful when you want stable component schema names in generated docs.
+### `ZSerialize(schema, options?)`
 
-For `nest-zod/swagger`, use `ZQuery(name, schema, options?)` whenever the incoming value is a named query parameter, including object-shaped values such as `filter[q]=widget`.
+Encodes each successful handler result before Nest sends it.
 
-## Swagger Helper Exports
+Runtime-only options:
+
+```ts
+type ZSerializeOptions = {
+  serialization?: {
+    async?: boolean;
+  };
+};
+```
+
+Enable `serialization.async` when the response schema requires
+`schema.encodeAsync()`.
+
+The Swagger-aware version also accepts `ApiResponseOptions` fields except
+`schema`, plus:
+
+```ts
+type ZSerializeOptions = {
+  refId?: string;
+  serialization?: {
+    async?: boolean;
+  };
+};
+```
+
+Its `status` field controls the documented response status. Use Nest's
+`@HttpCode()` to change the runtime HTTP status.
+
+## Runtime Classes
+
+### `ZValidationPipe`
+
+```ts
+new ZValidationPipe(schema, {
+  async?: boolean,
+  exceptionFactory?: (error) => exception,
+});
+```
+
+Synchronous mode returns the schema output directly. Async mode returns a
+promise. Non-Zod errors thrown by schema logic are rethrown unchanged.
+When the class's `TAsync` generic is explicitly `true`, the constructor also
+requires `{ async: true }`, keeping the declared promise return type aligned
+with runtime behavior.
+
+### `ZSerializerInterceptor`
+
+```ts
+new ZSerializerInterceptor(schema, {
+  async?: boolean,
+});
+```
+
+Encoding errors become `InternalServerErrorException` with message
+`Serialization failed`; the original error is available as `cause`.
+
+## OpenAPI Helpers
 
 ### `zodToOpenApiSchema(schema, options?)`
 
-Converts a Zod schema into an OpenAPI-compatible schema object.
+Converts a Zod schema into an inline OpenAPI 3.0 schema.
+
+`options.refId` is the internal id used by the temporary schema registry. It
+does not register a reusable component in the final Nest document.
+
+### `zodSchemaForInput(schema)`
+
+Returns the schema used to describe the incoming wire format. A top-level Zod
+codec uses its input side.
 
 ### `zodSchemaForEncodedResponse(schema)`
 
-Returns the response schema shape that should be documented for encoded output.
+Returns the schema used to describe the encoded response wire format. This is
+also the codec input side because that is what `schema.encode()` emits.
 
-This matters for codec-like schemas where the wire format is different from the runtime value.
+### `zodInputObjectSchema(schema)`
+
+Returns the underlying input object for whole-query documentation when the
+schema is an object or an object wrapped in `optional`, `nullable`, or
+`default`. Otherwise it returns `undefined`.
 
 ### `isZodObjectSchema(schema)`
 
-Utility to detect whether a schema is a Zod object. The Swagger `ZQuery` decorator uses this to emit one query parameter entry per object property.
+Narrows schemas accepted as whole-query objects. It uses
+`zodInputObjectSchema()` internally.
 
-## Errors
+## Default Errors
 
-### Validation failures
+Invalid input produces:
 
-Invalid input results in a Nest `BadRequestException` with message:
-
-```txt
-Validation failed
+```json
+{
+  "message": "Validation failed",
+  "statusCode": 400
+}
 ```
 
-### Serialization failures
+Encoding failures produce:
 
-Encoding failures result in a Nest `InternalServerErrorException` with message:
-
-```txt
-Serialization failed
+```json
+{
+  "message": "Serialization failed",
+  "statusCode": 500
+}
 ```
+
+See [Compatibility and Limits](/guide/compatibility) for async schemas,
+custom error envelopes, query parsing, recursive schemas, and supported peer
+versions.

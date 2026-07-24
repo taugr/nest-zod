@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import type { CallHandler } from '@nestjs/common';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { z } from 'zod';
 import { ZSerializerInterceptor } from '../src/serialize';
 
@@ -35,6 +35,23 @@ describe('ZSerializerInterceptor', () => {
   });
 
   describe('successful encoding', () => {
+    it('supports opt-in async encoding', async () => {
+      const schema = z.codec(z.string(), z.number(), {
+        decode: async (value) => Number(value),
+        encode: async (value) => String(value),
+      });
+      const interceptor = new ZSerializerInterceptor(schema, { async: true });
+
+      await expect(
+        firstValueFrom(
+          interceptor.intercept(
+            createMockExecutionContext(),
+            createMockCallHandler(42),
+          ),
+        ),
+      ).resolves.toBe('42');
+    });
+
     it('should encode object with string and number fields', async () => {
       const schema = z.object({
         name: z.string(),
@@ -314,6 +331,25 @@ describe('ZSerializerInterceptor', () => {
   });
 
   describe('encoding errors', () => {
+    it('wraps failed async encoding', async () => {
+      const schema = z.codec(z.string(), z.number(), {
+        decode: async (value) => Number(value),
+        encode: async () => {
+          throw new Error('Async encode failed');
+        },
+      });
+      const interceptor = new ZSerializerInterceptor(schema, { async: true });
+
+      await expect(
+        firstValueFrom(
+          interceptor.intercept(
+            createMockExecutionContext(),
+            createMockCallHandler(42),
+          ),
+        ),
+      ).rejects.toThrow(InternalServerErrorException);
+    });
+
     it('should throw InternalServerErrorException when encoding fails with invalid data type', async () => {
       const schema = z.object({
         id: stringToInt,

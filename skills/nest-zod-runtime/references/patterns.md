@@ -82,3 +82,7 @@ export class ItemsController {
 - `@ZSerialize(schema)` applies the serializer interceptor for that method.
 - Return the shape the schema expects to encode.
 - Update the response schema first when the API contract changes.
+- Use `validation: { async: true }` for asynchronous request schemas.
+- Use `serialization: { async: true }` for asynchronous response encoding.
+- Add `validation.exceptionFactory` only when the application intentionally
+  defines a custom validation error envelope.

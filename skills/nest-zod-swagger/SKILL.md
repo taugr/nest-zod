@@ -18,7 +18,7 @@ Keep changes aligned with this library's Swagger contract:
 
 1. Inspect the target controller, nearby schema files, and existing Swagger setup.
 2. Confirm the codebase wants generated OpenAPI metadata from `nest-zod/swagger`.
-3. Reuse existing Zod schemas when they already describe the contract. Add `refId` only when stable component naming will help generated docs stay clear.
+3. Reuse existing Zod schemas when they already describe the contract.
 4. Apply decorators in the smallest possible surface:
    - `@ZBody(schema, options?)`
    - `@ZParam(name, schema, options?)`
@@ -31,11 +31,13 @@ Keep changes aligned with this library's Swagger contract:
 ## Rules
 
 - Import from `nest-zod/swagger`, not `nest-zod`.
-- Use `refId` when a schema should have a stable, readable OpenAPI component name.
+- Treat `refId` as an internal generation identifier. It does not register a
+  reusable OpenAPI component.
 - Respect `ZSerialize` status rules:
   - `200` by default
   - `201` for `@Post()` unless overridden
-  - explicit `status` when passed to `ZSerialize`
+  - explicit `status` when passed to `ZSerialize` for OpenAPI metadata
+- Use `@HttpCode()` when the runtime HTTP status must change.
 - For whole-query object schemas, use `ZQuery(schema)`.
 - For scalar or named object query params, use `ZQuery(name, schema)`.
 - Do not imply that `nest-zod/swagger` bootstraps `SwaggerModule` for the app.
@@ -46,7 +48,7 @@ Keep changes aligned with this library's Swagger contract:
 
 - Define or reuse Zod schemas for request and response shapes.
 - Add `nest-zod/swagger` decorators instead of pairing runtime decorators with separate manual `ApiBody`, `ApiParam`, `ApiQuery`, or `ApiResponse` calls unless the task needs extra metadata beyond the decorator options.
-- Add `refId` selectively for stable schema names in generated docs.
+- Use decorator options for descriptions and other route metadata when needed.
 
 ### Correct mixed or incomplete Swagger usage
 

@@ -8,15 +8,21 @@ describe('decorators', () => {
 
     class C {
       m(
-        @ZParam('id', z.string()) _a: string,
-        @ZBody(schema) _b: unknown,
-        @ZQuery(z.object({ q: z.string() })) _c: unknown,
-        @ZQuery('page', z.coerce.number()) _d: number,
+        @ZParam('id', z.string(), { validation: { async: true } }) _a: string,
+        @ZBody(schema, { validation: { async: true } }) _b: unknown,
+        @ZQuery(z.object({ q: z.string() }), {
+          validation: { async: true },
+        })
+        _c: unknown,
+        @ZQuery('page', z.coerce.number(), {
+          validation: { async: true },
+        })
+        _d: number,
       ) {
         return null;
       }
 
-      @ZSerialize(schema)
+      @ZSerialize(schema, { serialization: { async: true } })
       s() {
         return { id: 'x' };
       }

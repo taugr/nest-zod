@@ -7,7 +7,7 @@ Thanks for contributing.
 Requirements:
 
 - Node.js 22+
-- `pnpm` 10+
+- `pnpm` 11
 
 Clone the repo and install dependencies:
 
@@ -40,13 +40,16 @@ pnpm run lint:fix
 pnpm run fmt:fix
 pnpm run test:coverage
 pnpm run build:playground
+pnpm run docs:build
+pnpm run test:consumer
+pnpm peers check
 ```
 
 ## Workflow
 
 1. Make changes in the library under `src/` and add or update tests.
 2. If the change affects consumer usage, verify it in the playground app under `playground/`.
-3. Run `pnpm run lint` and `pnpm run test`.
+3. Run `pnpm run fmt`, `pnpm run lint`, and `pnpm run test:coverage`.
 4. Run `pnpm run build` for library-only changes, or `pnpm run build:playground` if the playground changed too.
 5. Update `README.md` when the public API or developer workflow changes.
 

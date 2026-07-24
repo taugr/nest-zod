@@ -17,11 +17,8 @@ import { ZBody, ZParam, ZQuery, ZSerialize } from 'nest-zod/swagger';
 @Controller('items')
 export class ItemsController {
   @Post()
-  @ZSerialize(itemResponseSchema, { refId: 'CreateItemResponse' })
-  create(
-    @ZBody(createItemSchema, { refId: 'CreateItemBody' })
-    body: CreateItemDto,
-  ): ItemResponseDto {
+  @ZSerialize(itemResponseSchema)
+  create(@ZBody(createItemSchema) body: CreateItemDto): ItemResponseDto {
     return {
       id: '550e8400-e29b-41d4-a716-446655440000',
       title: body.title,
@@ -29,11 +26,8 @@ export class ItemsController {
   }
 
   @Get(':id')
-  @ZSerialize(itemResponseSchema, { refId: 'GetItemResponse' })
-  get(
-    @ZParam('id', itemIdSchema, { refId: 'ItemId' })
-    id: string,
-  ): ItemResponseDto {
+  @ZSerialize(itemResponseSchema)
+  get(@ZParam('id', itemIdSchema) id: string): ItemResponseDto {
     return {
       id,
       title: 'Widget',
@@ -41,10 +35,7 @@ export class ItemsController {
   }
 
   @Get()
-  list(
-    @ZQuery(listItemsQuerySchema, { refId: 'ListItemsQuery' })
-    query: ListItemsQueryDto,
-  ) {
+  list(@ZQuery(listItemsQuerySchema) query: ListItemsQueryDto) {
     return {
       page: query.page,
       items: [],
@@ -55,8 +46,10 @@ export class ItemsController {
 
 ## `refId` guidance
 
-- Add `refId` when generated component names should stay stable or readable.
-- Skip `refId` when the task is local and generated names do not matter.
+- `refId` controls the temporary registry id used during inline schema
+  generation.
+- It does not create a reusable `components.schemas` entry.
+- Most application code can omit it.
 
 ## Query guidance
 
@@ -69,6 +62,14 @@ export class ItemsController {
 - `ZSerialize` documents `200` by default.
 - `ZSerialize` documents `201` for `@Post()` handlers unless another status is explicit.
 - Preserve explicit `@HttpCode()` or `status` options when present.
+- `status` controls OpenAPI metadata; `@HttpCode()` controls the runtime status.
+
+## Async and error guidance
+
+- Use `validation: { async: true }` for asynchronous request schemas.
+- Use `serialization: { async: true }` for asynchronous response encoding.
+- Add `validation.exceptionFactory` only when the application intentionally
+  defines a custom validation error envelope.
 
 ## Swagger bootstrap guidance
 

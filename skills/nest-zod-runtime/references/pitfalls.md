@@ -30,3 +30,9 @@ Do not use the whole-query form for a scalar or specifically named parameter.
 ## Treating `ZSerialize` like input validation
 
 `ZSerialize` defines the outbound response contract. Fix the returned value or the response schema rather than leaving them drifted apart.
+
+## Async schemas without async mode
+
+Schemas with asynchronous refinements, transforms, or codecs require
+`validation: { async: true }`. Async response encoding separately requires
+`serialization: { async: true }`.

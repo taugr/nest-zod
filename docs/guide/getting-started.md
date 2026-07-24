@@ -149,6 +149,10 @@ When you use `nest-zod/swagger`:
 - `ZQuery('name', schema)` documents a named query parameter, including object-shaped values
 - `ZSerialize` documents the route's effective success status instead of always forcing `200`
 
+For async schemas, custom validation errors, supported peer versions, and
+OpenAPI boundaries, continue to
+[Compatibility and Limits](/guide/compatibility).
+
 ## If You Do Not Use Swagger
 
 Change only the import:

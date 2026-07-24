@@ -130,6 +130,10 @@ export default defineConfig({
           { text: 'AI Skills', link: '/guide/skills' },
           { text: 'Runtime Only', link: '/guide/runtime-only' },
           { text: 'Swagger', link: '/guide/swagger' },
+          {
+            text: 'Compatibility and Limits',
+            link: '/guide/compatibility',
+          },
         ],
       },
       {
@@ -148,11 +152,11 @@ export default defineConfig({
           },
           {
             text: 'Releases',
-            link: 'https://github.com/tom-auger/nest-zod/releases',
+            link: 'https://github.com/taugr/nest-zod/releases',
           },
           {
             text: 'Contributing',
-            link: 'https://github.com/tom-auger/nest-zod/blob/main/CONTRIBUTING.md',
+            link: 'https://github.com/taugr/nest-zod/blob/main/CONTRIBUTING.md',
           },
         ],
       },
@@ -174,6 +178,10 @@ export default defineConfig({
           items: [
             { text: 'Runtime Only', link: '/guide/runtime-only' },
             { text: 'Swagger', link: '/guide/swagger' },
+            {
+              text: 'Compatibility and Limits',
+              link: '/guide/compatibility',
+            },
           ],
         },
         {
@@ -191,7 +199,7 @@ export default defineConfig({
       ],
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/tom-auger/nest-zod' },
+      { icon: 'github', link: 'https://github.com/taugr/nest-zod' },
     ],
     footer: {
       message: 'Released under the MIT License.',
