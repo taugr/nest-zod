@@ -6,11 +6,16 @@ import {
 } from 'vitepress-plugin-group-icons';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import ts from 'typescript';
+import { createRequire } from 'node:module';
 import llmstxt from 'vitepress-plugin-llms';
 import pkg from '../../package.json';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const requireTypeScript = createRequire(
+  import.meta.resolve('typescript/package.json'),
+);
+const tsLibDirectory = dirname(requireTypeScript.resolve('@typescript/old'));
+const ts = requireTypeScript('@typescript/old') as typeof import('typescript');
 type VitePlugins = NonNullable<
   NonNullable<Parameters<typeof defineConfig>[0]['vite']>['plugins']
 >;
@@ -210,6 +215,8 @@ export default defineConfig({
     codeTransformers: [
       transformerTwoslash({
         twoslashOptions: {
+          tsModule: ts,
+          tsLibDirectory,
           compilerOptions: {
             baseUrl: resolve(__dirname, '../..'),
             experimentalDecorators: true,
