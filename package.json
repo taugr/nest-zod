@@ -58,22 +58,22 @@
     "*": "oxfmt --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.2.1",
-    "@nestjs/core": "^11.2.1",
-    "@nestjs/platform-express": "^11.2.1",
-    "@nestjs/swagger": "^11.4.6",
-    "@nestjs/testing": "^11.2.1",
+    "@nestjs/common": "^11.2.3",
+    "@nestjs/core": "^11.2.3",
+    "@nestjs/platform-express": "^11.2.3",
+    "@nestjs/swagger": "^11.4.7",
+    "@nestjs/testing": "^11.2.3",
     "@shikijs/vitepress-twoslash": "^4.4.3",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/coverage-v8": "^4.1.10",
-    "bumpp": "^12.2.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "bumpp": "^12.2.2",
     "floating-vue": "^5.2.2",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
+    "lint-staged": "^17.4.1",
     "oxfmt": "^0.65.0",
-    "oxlint": "^1.78.0",
+    "oxlint": "^1.80.0",
     "oxlint-tsgolint": "^7.0.2001",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
@@ -84,8 +84,8 @@
     "vitepress": "2.0.0-alpha.19",
     "vitepress-plugin-group-icons": "^1.7.6",
     "vitepress-plugin-llms": "^1.13.5",
-    "vitest": "^4.1.10",
-    "zod": "^4.4.3"
+    "vitest": "^4.1.11",
+    "zod": "^4.5.4"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0"

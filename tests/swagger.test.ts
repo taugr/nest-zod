@@ -93,6 +93,26 @@ describe('zodToOpenApiSchema', () => {
     expect(openApi.required).toEqual(expect.arrayContaining(['name', 'age']));
   });
 
+  it('restores an inherited safeParse implementation after introspection', () => {
+    const schema = z.string();
+
+    expect(Object.hasOwn(schema, 'safeParse')).toBe(false);
+    zodToOpenApiSchema(schema);
+    expect(Object.hasOwn(schema, 'safeParse')).toBe(false);
+
+    const childSchema = z.string();
+    const safeParse = childSchema.safeParse;
+    Object.defineProperty(childSchema, 'safeParse', {
+      configurable: true,
+      value: safeParse,
+      writable: true,
+    });
+
+    zodToOpenApiSchema(z.object({ child: childSchema }));
+    expect(Object.hasOwn(childSchema, 'safeParse')).toBe(true);
+    expect(childSchema.safeParse).toBe(safeParse);
+  });
+
   it('uses refId only as an internal inline-generation identifier', () => {
     const schema = z.string();
     const a = zodToOpenApiSchema(schema, { refId: 'FirstInternalRef' });

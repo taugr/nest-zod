@@ -222,14 +222,14 @@ function withSynchronousOpenApiIntrospection<T>(
 ): T {
   const schemas = new Set<z.ZodType>();
   collectNestedZodSchemas(schema, schemas);
-  const originals = new Map<z.ZodType, PropertyDescriptor>();
+  const originals = new Map<z.ZodType, PropertyDescriptor | undefined>();
 
   try {
     for (const nestedSchema of schemas) {
       const originalDescriptor = Reflect.getOwnPropertyDescriptor(
         nestedSchema,
         'safeParse',
-      )!;
+      );
       const originalSafeParse = nestedSchema.safeParse;
       originals.set(nestedSchema, originalDescriptor);
       Object.defineProperty(nestedSchema, 'safeParse', {
@@ -253,7 +253,11 @@ function withSynchronousOpenApiIntrospection<T>(
     return generate();
   } finally {
     for (const [nestedSchema, descriptor] of originals) {
-      Object.defineProperty(nestedSchema, 'safeParse', descriptor);
+      if (descriptor) {
+        Object.defineProperty(nestedSchema, 'safeParse', descriptor);
+      } else {
+        delete (nestedSchema as { safeParse?: unknown }).safeParse;
+      }
     }
   }
 }
