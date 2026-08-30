@@ -58,11 +58,11 @@
     "*": "oxfmt --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.2.3",
-    "@nestjs/core": "^11.2.3",
-    "@nestjs/platform-express": "^11.2.3",
-    "@nestjs/swagger": "^11.4.7",
-    "@nestjs/testing": "^11.2.3",
+    "@nestjs/common": "^12.0.1",
+    "@nestjs/core": "^12.0.1",
+    "@nestjs/platform-express": "^12.0.1",
+    "@nestjs/swagger": "^12.0.1",
+    "@nestjs/testing": "^12.0.1",
     "@shikijs/vitepress-twoslash": "^4.4.3",
     "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
@@ -91,8 +91,8 @@
     "@asteasolutions/zod-to-openapi": "^9.1.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0",
-    "@nestjs/swagger": "^8.0.0 || ^11.0.0",
+    "@nestjs/common": "^10.0.0 || ^11.0.0 || ^12.0.0",
+    "@nestjs/swagger": "^8.0.0 || ^11.0.0 || ^12.0.0",
     "rxjs": "^7.0.0",
     "zod": "^4.0.0"
   },

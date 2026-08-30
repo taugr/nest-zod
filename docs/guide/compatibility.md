@@ -10,6 +10,10 @@ The supported Nest combinations are:
 | ------ | ----------------- |
 | 10     | 8                 |
 | 11     | 11                |
+| 12     | 12                |
+
+NestJS 12 and `@nestjs/swagger` 12 require Node.js 22.12 or newer within the
+supported Node 22 line.
 
 `@nestjs/swagger` is optional. Install it only when importing from
 `nest-zod/swagger`.

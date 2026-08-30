@@ -10,7 +10,7 @@ extendZodWithOpenApi(z);
 
 type OpenApiSchemaObject = Extract<
   NonNullable<NonNullable<OpenAPIObject['components']>['schemas']>[string],
-  { type?: string }
+  { type?: string | string[] }
 >;
 
 type NullishValue = null | undefined;

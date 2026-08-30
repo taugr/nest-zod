@@ -14,8 +14,8 @@ const temporaryRoot = mkdtempSync(join(tmpdir(), 'nest-zod-consumer-'));
 const packageDirectory = join(temporaryRoot, 'package');
 const consumerDirectory = join(temporaryRoot, 'consumer');
 const npmCache = join(temporaryRoot, 'npm-cache');
-const nestVersion = process.env.NEST_VERSION ?? '^11.0.0';
-const swaggerVersion = process.env.SWAGGER_VERSION ?? '^11.0.0';
+const nestVersion = process.env.NEST_VERSION ?? '^12.0.0';
+const swaggerVersion = process.env.SWAGGER_VERSION ?? '^12.0.0';
 const packageVersion = JSON.parse(
   readFileSync(join(repositoryRoot, 'package.json'), 'utf8'),
 ).version;
