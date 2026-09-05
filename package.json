@@ -67,7 +67,7 @@
     "@types/node": "^26.4.0",
     "@types/supertest": "^7.2.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.0",
     "bumpp": "^12.2.2",
     "floating-vue": "^5.2.2",
     "husky": "^9.1.7",
@@ -84,7 +84,7 @@
     "vitepress": "2.0.0-alpha.19",
     "vitepress-plugin-group-icons": "^1.7.6",
     "vitepress-plugin-llms": "^1.13.5",
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.0",
     "zod": "^4.5.4"
   },
   "dependencies": {
