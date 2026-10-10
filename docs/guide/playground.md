@@ -61,6 +61,9 @@ They demonstrate the same runtime model without Swagger metadata.
 
 - `POST /items` with a valid payload returns a serialized response
 - `GET /items?page=2&includeArchived=true` shows query coercion/default behavior
+- `GET /items?includeArchived=false` returns `includeArchived: false` and a `Widget`
+- `GET /items` defaults `includeArchived` to `false`
+- `GET /items?includeArchived=yes` returns `400`; only lowercase `true` and `false` are accepted
 - `GET /items/named-query?filter[q]=widget` shows named object query parsing and Swagger docs
 - `GET /items/async/550e8400-e29b-41d4-a716-446655440000` shows async validation
 - `POST /items/detailed-validation` with an invalid body returns field-level issues

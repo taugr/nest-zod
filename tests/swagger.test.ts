@@ -775,6 +775,10 @@ describe('swagger ZQuery', () => {
     expect(queries.some((p) => p['name'] === 'q')).toBe(true);
     expect(queries.find((p) => p['name'] === 'page')?.['required']).toBe(true);
     expect(queries.find((p) => p['name'] === 'q')?.['required']).toBe(false);
+    for (const query of queries) {
+      expect(query).not.toHaveProperty('style');
+      expect(query).not.toHaveProperty('explode');
+    }
   });
 
   it('supports wrapped whole-query object schemas', () => {
@@ -831,11 +835,116 @@ describe('swagger ZQuery', () => {
     expect(queries).toHaveLength(1);
     expect(queries[0]).toMatchObject({
       name: 'filter',
+      required: true,
+      style: 'deepObject',
+      explode: true,
       schema: {
         type: 'object',
         properties: { q: { type: 'string' } },
       },
     });
+  });
+
+  it.each([
+    ['optional', z.object({ q: z.string() }).optional()],
+    ['defaulted', z.object({ q: z.string() }).default({ q: 'widget' })],
+    [
+      'codec input',
+      z.codec(z.object({ q: z.string() }), z.string(), {
+        decode: (value) => value.q,
+        encode: (value) => ({ q: value }),
+      }),
+    ],
+    [
+      'scalar properties',
+      z.strictObject({
+        q: z.string().optional(),
+        page: z.coerce.number().int(),
+        amount: z.number(),
+        archived: z.boolean(),
+        category: z.enum(['one', 'two']),
+        nullable: z.string().nullable(),
+      }),
+    ],
+  ])('uses deepObject for a named flat object (%s)', (_name, schema) => {
+    class Controller {
+      search(@ZQuery('filter', schema) _query: unknown) {
+        return {};
+      }
+    }
+
+    const params = Reflect.getMetadata(
+      API_PARAMETERS,
+      Controller.prototype.search,
+    ) as Record<string, unknown>[];
+    expect(params).toHaveLength(1);
+    expect(params[0]).toMatchObject({
+      name: 'filter',
+      in: 'query',
+      required: !zodSchemaAcceptsUndefined(schema),
+      style: 'deepObject',
+      explode: true,
+    });
+  });
+
+  it.each([
+    ['empty object', z.object({})],
+    ['array parameter', z.array(z.string())],
+    ['nested object', z.object({ nested: z.object({ q: z.string() }) })],
+    ['array property', z.object({ q: z.array(z.string()) })],
+    ['unknown property', z.object({ q: z.unknown() })],
+    ['union property', z.object({ q: z.union([z.string(), z.number()]) })],
+    ['open object', z.looseObject({ q: z.string() })],
+    ['catchall', z.object({ q: z.string() }).catchall(z.string())],
+  ])(
+    'preserves metadata for unsupported named query shapes (%s)',
+    (_name, schema) => {
+      class Controller {
+        search(@ZQuery('filter', schema) _query: unknown) {
+          return {};
+        }
+      }
+
+      const params = Reflect.getMetadata(
+        API_PARAMETERS,
+        Controller.prototype.search,
+      ) as Record<string, unknown>[];
+      expect(params).toHaveLength(1);
+      expect(params[0]).not.toHaveProperty('style');
+      expect(params[0]).not.toHaveProperty('explode');
+      expect(params[0]['schema']).toEqual(
+        zodToOpenApiSchema(zodSchemaForInput(schema)),
+      );
+    },
+  );
+
+  it('does not add query serialization metadata to body or path objects', () => {
+    const schema = z.object({ q: z.string() });
+    class Controller {
+      body(@ZBody(schema) _body: unknown) {
+        return {};
+      }
+      path(@ZParam('filter', schema) _path: unknown) {
+        return {};
+      }
+    }
+
+    const params = Reflect.getMetadata(
+      API_PARAMETERS,
+      Controller.prototype.path,
+    ) as Record<string, unknown>[];
+    expect(params[0]).toMatchObject({ in: 'path', name: 'filter' });
+    expect(params[0]).not.toHaveProperty('style');
+    expect(params[0]).not.toHaveProperty('explode');
+    const body = (
+      Reflect.getMetadata(API_PARAMETERS, Controller.prototype.body) as Record<
+        string,
+        unknown
+      >[]
+    )[0];
+    expect(body).toMatchObject({ schema: { type: 'object' } });
+    expect(body).not.toHaveProperty('style');
+    expect(body).not.toHaveProperty('explode');
   });
 
   it('emits a single named ApiQuery for a scalar schema', () => {
@@ -857,6 +966,8 @@ describe('swagger ZQuery', () => {
     const queries = params.filter((p) => p['in'] === 'query' && p['schema']);
     expect(queries).toHaveLength(1);
     expect(queries[0]['name']).toBe('q');
+    expect(queries[0]).not.toHaveProperty('style');
+    expect(queries[0]).not.toHaveProperty('explode');
   });
 
   it('throws for scalar schemas without a query parameter name', () => {

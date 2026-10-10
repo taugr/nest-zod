@@ -231,12 +231,29 @@ export function ZQuery<T extends z.ZodType>(
       );
     }
 
+    const openApiSchema = zodToOpenApiSchema(zodSchemaForInput(schema), {
+      refId: refPrefix,
+    });
+    // OpenAPI defines deepObject for objects with scalar properties; nested
+    // objects and arrays need an application-specific serialization contract.
+    const properties = Object.values(openApiSchema.properties ?? {});
+    const flatObject =
+      openApiSchema.type === 'object' &&
+      !openApiSchema.additionalProperties &&
+      properties.length > 0 &&
+      properties.every(
+        (property) =>
+          'type' in property &&
+          ['string', 'number', 'integer', 'boolean'].some(
+            (type) => property.type === type,
+          ),
+      );
+
     ApiQuery({
       name,
       required: !zodSchemaAcceptsUndefined(schema),
-      schema: zodToOpenApiSchema(zodSchemaForInput(schema), {
-        refId: refPrefix,
-      }),
+      ...(flatObject ? { style: 'deepObject', explode: true } : {}),
+      schema: openApiSchema,
     })(target, propertyKey, descriptor);
   };
 }

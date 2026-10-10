@@ -146,6 +146,13 @@ For query params, use:
 - `ZQuery(schema)` for the whole query object
 - `ZQuery('name', schema)` for a named query parameter, including object-shaped values
 
+Swagger documents named objects with declared scalar properties using
+`deepObject` and `explode: true`, matching bracket queries such as
+`?filter[q]=widget`. The HTTP adapter must support this shape; the playground
+enables Express's extended query parser. Nested objects, arrays, empty objects,
+unconstrained properties, and catchall objects need an application-specific wire
+contract and retain their existing metadata.
+
 For schemas with async refinements, transforms, or codecs, enable async mode:
 
 ```typescript

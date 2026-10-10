@@ -8,7 +8,10 @@ export const createItemSchema = z.object({
 
 export const listItemsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  includeArchived: z.coerce.boolean().default(false),
+  includeArchived: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
 });
 
 export const namedFilterQuerySchema = z.object({

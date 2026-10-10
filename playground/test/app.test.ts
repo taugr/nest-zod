@@ -128,6 +128,9 @@ describe('playground app', () => {
     expect(parameters?.[0]).toMatchObject({
       in: 'query',
       name: 'filter',
+      required: true,
+      style: 'deepObject',
+      explode: true,
       schema: {
         type: 'object',
         properties: { q: { type: 'string' } },

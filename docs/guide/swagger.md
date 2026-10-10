@@ -47,7 +47,10 @@ const createItemSchema = z.object({
 
 const listItemsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  includeArchived: z.coerce.boolean().default(false),
+  includeArchived: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
 });
 
 const itemResponseSchema = z.object({
@@ -120,9 +123,21 @@ search(
 }
 ```
 
+Named objects with declared scalar properties are documented with
+`style: 'deepObject'` and `explode: true`, so OpenAPI clients serialize this
+example as `?filter[q]=widget`. Empty objects, nested object/array properties,
+unconstrained properties, and catchall objects retain their existing metadata;
+their wire serialization needs an application-specific contract.
+
 With the default Nest Express adapter, nested query shapes typically require the
 extended query parser so requests like `?filter[q]=widget` arrive as objects.
 The local playground enables that parser.
+
+For boolean query values, validate the wire strings before transforming them.
+The example above accepts only lowercase `true` and `false`, defaults omission
+to `false`, and returns `400` for invalid strings, arrays, or objects. Avoid
+`z.coerce.boolean()` for this contract: a nonempty string such as `"false"`
+coerces to `true`.
 
 ## `SwaggerModule` Setup
 
