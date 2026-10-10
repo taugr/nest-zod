@@ -9,4 +9,8 @@ allowBuilds:
   '@nestjs/core': true
   '@scarf/scarf': true
   esbuild: true
+  '@tree-sitter-grammars/tree-sitter-yaml': false
+  core-js-pure: false
+  tree-sitter-json: false
+  tree-sitter: false
 enableGlobalVirtualStore: true
