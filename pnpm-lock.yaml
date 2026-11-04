@@ -181,7 +181,7 @@ importers:
         version: 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)
       '@nestjs/swagger':
         specifier: ^12.0.2
-        version: 12.0.5(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(@typescript/typescript6@6.0.2)(reflect-metadata@0.2.2)
+        version: 12.1.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(@typescript/typescript6@6.0.2)(reflect-metadata@0.2.2)
       '@nestjs/testing':
         specifier: ^12.1.2
         version: 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(@nestjs/platform-express@12.3.2)
@@ -271,7 +271,7 @@ importers:
         version: 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)
       '@nestjs/swagger':
         specifier: ^12.0.2
-        version: 12.0.5(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
+        version: 12.1.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(reflect-metadata@0.2.2)(typescript@6.0.3)
       nest-zod:
         specifier: workspace:*
         version: link:..
@@ -564,8 +564,8 @@ packages:
       '@nestjs/websockets':
         optional: true
 
-  '@nestjs/mapped-types@12.0.0':
-    resolution: {integrity: sha512-aX7lxZcqXldtnSr0bgT2ZPQvpTpIwBMW1GMX29o4s3q02vmq6JoTYuPW0GwYXa8BiFMRX7WbGZVDA703pNqOMQ==}
+  '@nestjs/mapped-types@12.0.1':
+    resolution: {integrity: sha512-AHkgYt6UgJ5XBE3v4zGUUdfPD7kCGBzOa/uHfOYkkRTfojYWLRCCdAJiyWNpIFHCySJH/MR2F/z4MrMo5YheHg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0 || ^12.0.0
@@ -584,8 +584,8 @@ packages:
       '@nestjs/common': ^12.0.0
       '@nestjs/core': ^12.0.0
 
-  '@nestjs/swagger@12.0.5':
-    resolution: {integrity: sha512-6Zf8DhSqyBt3409Ycpezy7cVfAiO1s9XkjyxE7RtOJmVzMPs2T4XGC7sukBvxdtIVmhUC9EoglHH73O75MKApw==}
+  '@nestjs/swagger@12.1.0':
+    resolution: {integrity: sha512-WpgAPV783os2TwEFarEDH9VulfQh2G+SCN2o+6jO1yNZT35ytvSUNs45suINxewRbo8Hmg72NZLWL+wre6i18Q==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
       '@fastify/static': ^8.0.0 || ^9.0.0 || ^10.0.0
@@ -3402,7 +3402,7 @@ snapshots:
     optionalDependencies:
       '@nestjs/platform-express': 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)
 
-  '@nestjs/mapped-types@12.0.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)':
+  '@nestjs/mapped-types@12.0.1(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/common': 12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
@@ -3419,12 +3419,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nestjs/swagger@12.0.5(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(@typescript/typescript6@6.0.2)(reflect-metadata@0.2.2)':
+  '@nestjs/swagger@12.1.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(@typescript/typescript6@6.0.2)(reflect-metadata@0.2.2)':
     dependencies:
       '@microsoft/tsdoc': 0.17.1
       '@nestjs/common': 12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@12.3.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/mapped-types': 12.0.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)
+      '@nestjs/mapped-types': 12.0.1(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)
       '@standard-schema/spec': 1.1.0
       es-toolkit: 1.52.0
       js-yaml: 5.5.0
@@ -3434,12 +3434,12 @@ snapshots:
     optionalDependencies:
       typescript: '@typescript/typescript6@6.0.2'
 
-  '@nestjs/swagger@12.0.5(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(reflect-metadata@0.2.2)(typescript@6.0.3)':
+  '@nestjs/swagger@12.1.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@12.3.2)(reflect-metadata@0.2.2)(typescript@6.0.3)':
     dependencies:
       '@microsoft/tsdoc': 0.17.1
       '@nestjs/common': 12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 12.3.2(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@12.3.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/mapped-types': 12.0.0(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)
+      '@nestjs/mapped-types': 12.0.1(@nestjs/common@12.3.2(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)
       '@standard-schema/spec': 1.1.0
       es-toolkit: 1.52.0
       js-yaml: 5.5.0
